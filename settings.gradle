@@ -1,8 +1,9 @@
 pluginManagement {
     repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
         gradlePluginPortal()
-        maven { url = 'https://maven.minecraftforge.net/' }
     }
 }
-
-rootProject.name = 'Eternal-Starlight'
