@@ -1,34 +1,34 @@
 package cn.leolezury.eternalstarlight.mixins;
 
 import cn.leolezury.eternalstarlight.init.ItemInit;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ItemInHandRenderer.class)
-public class ItemInHandRendererMixin {
+@Mixin(HeldItemRenderer.class)
+abstract class ItemInHandRendererMixin {
     @SuppressWarnings({"ConstantConditions"})
-    @Inject(method = "evaluateWhichHandsToRender", at = @At(value = "RETURN"), cancellable = true)
-    private static void evaluateWhichHandsToRender(LocalPlayer player, CallbackInfoReturnable<ItemInHandRenderer.HandRenderSelection> cir) {
-        ItemStack itemStack = player.getMainHandItem();
-        ItemStack itemStack1 = player.getOffhandItem();
-        boolean flag = itemStack.is(ItemInit.CRYSTAL_CROSSBOW.get()) || itemStack.is(ItemInit.LUNAR_MONSTROSITY_BOW.get());
-        boolean flag1 = itemStack1.is(ItemInit.CRYSTAL_CROSSBOW.get()) || itemStack1.is(ItemInit.LUNAR_MONSTROSITY_BOW.get());
+    @Inject(method = "getHandRenderType", at = @At(value = "RETURN"), cancellable = true)
+    private static void getHandRenderType(ClientPlayerEntity player, CallbackInfoReturnable<HeldItemRenderer.HandRenderType> cir) {
+        ItemStack itemStack = player.getMainHandStack();
+        ItemStack itemStack1 = player.getOffHandStack();
+        boolean flag = itemStack.isOf(ItemInit.CRYSTAL_CROSSBOW) || itemStack.isOf(ItemInit.LUNAR_MONSTROSITY_BOW);
+        boolean flag1 = itemStack1.isOf(ItemInit.CRYSTAL_CROSSBOW) || itemStack1.isOf(ItemInit.LUNAR_MONSTROSITY_BOW);
         if (flag || flag1) {
             if (player.isUsingItem()) {
-                ItemStack itemStack2 = player.getUseItem();
-                InteractionHand interactionhand = player.getUsedItemHand();
-                if (itemStack2.is(ItemInit.CRYSTAL_CROSSBOW.get()) || itemStack2.is(ItemInit.LUNAR_MONSTROSITY_BOW.get())) {
-                    cir.setReturnValue(ItemInHandRenderer.HandRenderSelection.onlyForHand(interactionhand));
+                ItemStack itemStack2 = player.getActiveItem();
+                Hand hand = player.getActiveHand();
+                if (itemStack2.isOf(ItemInit.CRYSTAL_CROSSBOW) || itemStack2.isOf(ItemInit.LUNAR_MONSTROSITY_BOW)) {
+                    cir.setReturnValue(HeldItemRenderer.HandRenderType.shouldOnlyRender(hand));
                 }
             } else {
-                cir.setReturnValue((itemStack.is(ItemInit.CRYSTAL_CROSSBOW.get()) && CrossbowItem.isCharged(itemStack)) ? ItemInHandRenderer.HandRenderSelection.RENDER_MAIN_HAND_ONLY : ItemInHandRenderer.HandRenderSelection.RENDER_BOTH_HANDS);
+                cir.setReturnValue((itemStack.isOf(ItemInit.CRYSTAL_CROSSBOW) && CrossbowItem.isCharged(itemStack)) ? HeldItemRenderer.HandRenderType.RENDER_MAIN_HAND_ONLY : HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS);
             }
         }
     }

@@ -6,6 +6,8 @@ import cn.leolezury.eternalstarlight.init.SoundEventInit;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -22,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-public class EyeOfSeeking extends Entity implements ItemSupplier {
+public class EyeOfSeeking extends Entity implements FlyingItemEntity {
     private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK = SynchedEntityData.defineId(EyeOfSeeking.class, EntityDataSerializers.ITEM_STACK);
     private double tx;
     private double ty;

@@ -2,84 +2,85 @@ package cn.leolezury.eternalstarlight.item.misc;
 
 import cn.leolezury.eternalstarlight.entity.misc.SLBoat;
 import cn.leolezury.eternalstarlight.entity.misc.SLChestBoat;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.stat.Stats;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
+import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class SLBoatItem extends Item {
 
-    private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
+    private static final Predicate<Entity> ENTITY_PREDICATE = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
     private final SLBoat.Type type;
     private final boolean chest;
 
-    public SLBoatItem(boolean chest, SLBoat.Type type, Item.Properties properties) {
-        super(properties);
+    public SLBoatItem(boolean chest, SLBoat.Type type, FabricItemSettings settings) {
+        super(settings);
         this.chest = chest;
         this.type = type;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
-        HitResult result = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack itemstack = player.getStackInHand(hand);
+        HitResult result = raycast(world, player, RaycastContext.FluidHandling.ANY);
         if (result.getType() == HitResult.Type.MISS) {
-            return InteractionResultHolder.pass(itemstack);
+            return TypedActionResult.pass(itemstack);
         }
         else {
-            Vec3 vector3d = player.getViewVector(1.0F);
-            List<Entity> list = level.getEntities(player, player.getBoundingBox().expandTowards(vector3d.scale(5.0D)).inflate(1.0D), ENTITY_PREDICATE);
+            Vec3d vector3d = player.getRotationVec(1.0F);
+            List<Entity> list = world.getOtherEntities(player, player.getBoundingBox().stretch(vector3d.multiply(5.0D)).expand(1.0D), ENTITY_PREDICATE);
             if (!list.isEmpty()) {
-                Vec3 vector3d1 = player.getEyePosition(1.0F);
+                Vec3d vector3d1 = player.getCameraPosVec(1.0F);
 
                 for(Entity entity : list) {
-                    AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
-                    if (aabb.contains(vector3d1)) {
-                        return InteractionResultHolder.pass(itemstack);
+                    Box box = entity.getBoundingBox().expand(entity.getTargetingMargin());
+                    if (box.contains(vector3d1)) {
+                        return TypedActionResult.pass(itemstack);
                     }
                 }
             }
 
             if (result.getType() == HitResult.Type.BLOCK) {
-                SLBoat boat = this.getBoat(level, result);
+                SLBoat boat = this.getBoat(world, result);
                 boat.setSLBoatType(this.type);
-                boat.setYRot(player.getYRot());
-                if (!level.noCollision(boat, boat.getBoundingBox())) {
-                    return InteractionResultHolder.fail(itemstack);
+                boat.setYaw(player.getYaw());
+                if (!world.isSpaceEmpty(boat, boat.getBoundingBox())) {
+                    return TypedActionResult.fail(itemstack);
                 }
                 else {
-                    if (!level.isClientSide()) {
-                        level.addFreshEntity(boat);
-                        level.gameEvent(player, GameEvent.ENTITY_PLACE, result.getLocation());
-                        if (!player.getAbilities().instabuild) {
-                            itemstack.shrink(1);
+                    if (!world.isClient()) {
+                        world.spawnEntity(boat);
+                        world.emitGameEvent(player, GameEvent.ENTITY_PLACE, result.getPos());
+                        if (!player.getAbilities().creativeMode) {
+                            itemstack.decrement(1);
                         }
                     }
 
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                    return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
+                    player.incrementStat(Stats.USED.getOrCreateStat(this));
+                    return TypedActionResult.success(itemstack, world.isClient());
                 }
             }
             else {
-                return InteractionResultHolder.pass(itemstack);
+                return TypedActionResult.pass(itemstack);
             }
         }
     }
 
-    private SLBoat getBoat(Level level, HitResult result) {
-        return this.chest ? new SLChestBoat(level, result.getLocation().x, result.getLocation().y, result.getLocation().z) : new SLBoat(level, result.getLocation().x, result.getLocation().y, result.getLocation().z);
+    private SLBoat getBoat(World world, HitResult result) {
+        return this.chest ? new SLChestBoat(world, result.getPos().x, result.getPos().y, result.getPos().z) : new SLBoat(world, result.getPos().x, result.getPos().y, result.getPos().z);
     }
 }

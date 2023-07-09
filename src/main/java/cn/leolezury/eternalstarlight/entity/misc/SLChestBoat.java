@@ -3,11 +3,14 @@ package cn.leolezury.eternalstarlight.entity.misc;
 import cn.leolezury.eternalstarlight.init.EntityInit;
 import cn.leolezury.eternalstarlight.init.ItemInit;
 import net.minecraft.core.NonNullList;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.World;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,12 +35,12 @@ public class SLChestBoat extends SLBoat implements HasCustomInventoryScreen, Con
     private ResourceLocation lootTable;
     private long lootTableSeed;
 
-    public SLChestBoat(EntityType<? extends Boat> p_219869_, Level p_219870_) {
-        super(p_219869_, p_219870_);
+    public SLChestBoat(EntityType<? extends ChestBoatEntity> type, World world) {
+        super(type, world);
     }
 
-    public SLChestBoat(Level p_219872_, double p_219873_, double p_219874_, double p_219875_) {
-        this(EntityInit.CHEST_BOAT.get(), p_219872_);
+    public SLChestBoat(World world, double p_219873_, double p_219874_, double p_219875_) {
+        this(EntityInit.CHEST_BOAT, world);
         this.setPos(p_219873_, p_219874_, p_219875_);
         this.xo = p_219873_;
         this.yo = p_219874_;

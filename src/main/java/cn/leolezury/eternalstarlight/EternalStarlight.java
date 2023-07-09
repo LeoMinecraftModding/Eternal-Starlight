@@ -1,20 +1,19 @@
 package cn.leolezury.eternalstarlight;
 
 import cn.leolezury.eternalstarlight.init.*;
+import net.fabricmc.api.ModInitializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(EternalStarlight.MOD_ID)
-public class EternalStarlight {
-    public static final String MOD_ID = "eternal_starlight";
+public class EternalStarlight implements ModInitializer {
+    public static final String MODID = "eternal_starlight";
 
-    public EternalStarlight() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+    @Override
+    public void onInitialize() {
         BlockInit.BLOCKS.register(modEventBus);
 
-        ItemInit.ITEMS.register(modEventBus);
+        ItemInit.register(modEventBus);
         CreativeModeTabInit.TABS.register(modEventBus);
 
         EntityInit.ENTITIES.register(modEventBus);

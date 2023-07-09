@@ -15,6 +15,7 @@ import cn.leolezury.eternalstarlight.entity.monster.NightshadeSpider;
 import cn.leolezury.eternalstarlight.entity.npc.boarwarf.Boarwarf;
 import cn.leolezury.eternalstarlight.entity.npc.boarwarf.golem.AstralGolem;
 import cn.leolezury.eternalstarlight.entity.projectile.Spore;
+import net.minecraft.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -25,7 +26,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class EntityInit {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, EternalStarlight.MOD_ID);
     public static final RegistryObject<EntityType<SLFallingBlock>> FALLING_BLOCK = ENTITIES.register("falling_block", () -> EntityType.Builder.<SLFallingBlock>of(SLFallingBlock::new, MobCategory.MISC).sized(0.98F, 0.98F).clientTrackingRange(10).updateInterval(20).build("falling_block"));
-    public static final RegistryObject<EntityType<SLBoat>> BOAT = ENTITIES.register("boat", () -> EntityType.Builder.<SLBoat>of(SLBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10).setShouldReceiveVelocityUpdates(true).build("boat"));
+    public static final EntityType<SLBoat> BOAT = ENTITIES.register("boat", () -> EntityType.Builder.<SLBoat>of(SLBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10).setShouldReceiveVelocityUpdates(true).build("boat"));
     public static final RegistryObject<EntityType<SLChestBoat>> CHEST_BOAT = ENTITIES.register("chest_boat", () -> EntityType.Builder.<SLChestBoat>of(SLChestBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F).clientTrackingRange(10).setShouldReceiveVelocityUpdates(true).build("chest_boat"));
     public static final RegistryObject<EntityType<CameraShake>> CAMERA_SHAKE = ENTITIES.register("camera_shake", () -> EntityType.Builder.<CameraShake>of(CameraShake::new, MobCategory.MISC).sized(0f, 0f).build(new ResourceLocation(EternalStarlight.MOD_ID, "camera_shake").toString()));
     public static final RegistryObject<EntityType<Boarwarf>> BOARWARF = ENTITIES.register("boarwarf", () -> EntityType.Builder.<Boarwarf>of(Boarwarf::new, MobCategory.MISC).sized(0.6F, 1.99F).clientTrackingRange(8).build(new ResourceLocation(EternalStarlight.MOD_ID, "boarwarf").toString()));

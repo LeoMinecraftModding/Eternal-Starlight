@@ -2,10 +2,16 @@ package cn.leolezury.eternalstarlight.block;
 
 import cn.leolezury.eternalstarlight.init.BlockInit;
 import cn.leolezury.eternalstarlight.init.ItemInit;
+import net.minecraft.block.AbstractPlantStemBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Fertilizable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -20,16 +26,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class BerriesVineBlock extends GrowingPlantHeadBlock implements BonemealableBlock, BerriesVines {
+public class BerriesVineBlock extends AbstractPlantStemBlock implements Fertilizable, BerriesVines {
     private static final float CHANCE_OF_BERRIES_ON_GROWTH = 0.11F;
 
-    public BerriesVineBlock(BlockBehaviour.Properties p_152959_) {
-        super(p_152959_, Direction.DOWN, SHAPE, false, 0.1D);
-        this.registerDefaultState(this.stateDefinition.any().setValue(AGE, Integer.valueOf(0)).setValue(BERRIES, Boolean.valueOf(false)));
+    protected int getGrowthLength(Random p_220928_) {
+        return 1;
     }
 
-    protected int getBlocksToGrowWhenBonemealed(RandomSource p_220928_) {
-        return 1;
+    @Override
+    protected boolean chooseStemState(BlockState state) {
+        return false;
     }
 
     protected boolean canGrowInto(BlockState p_152998_) {
@@ -71,5 +77,16 @@ public class BerriesVineBlock extends GrowingPlantHeadBlock implements Bonemeala
 
     public void performBonemeal(ServerLevel p_220923_, RandomSource p_220924_, BlockPos p_220925_, BlockState p_220926_) {
         p_220923_.setBlock(p_220925_, p_220926_.setValue(BERRIES, Boolean.valueOf(true)), 2);
+    }
+
+    @Override
+    protected int getGrowthLength(Random random) {
+        super(random, Direction.DOWN, SHAPE, false, 0.1D);
+        this.setDefaultState(this.stateManager.getDefaultState()/*.setValue(AGE, Integer.valueOf(0))*/.setValue(BERRIES, Boolean.valueOf(false)));
+    }
+
+    @Override
+    protected Block getPlant() {
+        return null;
     }
 }

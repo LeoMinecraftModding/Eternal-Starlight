@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "eternal_starlight",
+  "version": "${version}",
+  "name": "Eternal Starlight",
+  "description": "",
+  "authors": [],
+  "accessWidener" : "eternal_starlight.accesswidener",
+  "contact": {
+    "repo": "https://github.com/Administrator/corpose"
+  },
+  "license": "MIT",
+  "icon": "assets/eternal_starlight/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "cn.leolezury.eternalstarlight.client.EternalStarlightClient"
+    ],
+    "main": [
+      "cn.leolezury.eternalstarlight.EternalStarlight"
+    ]
+  },
+  "mixins": [
+    "eternal_starlight.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "geckolib": "4.2.1"
+  }
+}

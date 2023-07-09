@@ -3,79 +3,79 @@ package cn.leolezury.eternalstarlight.entity.misc;
 import cn.leolezury.eternalstarlight.init.BlockInit;
 import cn.leolezury.eternalstarlight.init.EntityInit;
 import cn.leolezury.eternalstarlight.init.ItemInit;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.network.NetworkHooks;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.world.World;
 
-public class SLBoat extends Boat {
-    private static final EntityDataAccessor<Integer> BOAT_TYPE = SynchedEntityData.defineId(SLBoat.class, EntityDataSerializers.INT);
+public class SLBoat extends BoatEntity {
+    private static final TrackedData<Integer> BOAT_TYPE = DataTracker.registerData(SLBoat.class, TrackedDataHandlerRegistry.INTEGER);
 
-    public SLBoat(EntityType<? extends Boat> type, Level level) {
-        super(type, level);
-        this.blocksBuilding = true;
+    public SLBoat(EntityType<? extends BoatEntity> type, World world) {
+        super(type, world);
+        this.intersectionChecked = true;
     }
 
-    public SLBoat(Level level, double x, double y, double z) {
-        this(EntityInit.BOAT.get(), level);
+    public SLBoat(World world, double x, double y, double z) {
+        this(EntityInit.BOAT, world);
         this.setPos(x, y, z);
-        this.xo = x;
-        this.yo = y;
-        this.zo = z;
+        this.prevX = x;
+        this.prevY = y;
+        this.prevZ = z;
     }
 
     public SLBoat.Type getSLBoatType() {
-        return SLBoat.Type.byId(this.entityData.get(BOAT_TYPE));
+        return SLBoat.Type.byId(this.dataTracker.get(BOAT_TYPE));
     }
 
     @Override
-    public Item getDropItem() {
+    public Item asItem() {
         return switch (this.getSLBoatType()) {
-            case LUNAR -> ItemInit.LUNAR_BOAT.get();
-            case NORTHLAND -> ItemInit.NORTHLAND_BOAT.get();
-            case STARLIGHT_MANGROVE -> ItemInit.STARLIGHT_MANGROVE_BOAT.get();
+            case LUNAR -> ItemInit.LUNAR_BOAT;
+            case NORTHLAND -> ItemInit.NORTHLAND_BOAT;
+            case STARLIGHT_MANGROVE -> ItemInit.STARLIGHT_MANGROVE_BOAT;
         };
     }
 
     public void setSLBoatType(SLBoat.Type boatType) {
-        this.entityData.set(BOAT_TYPE, boatType.ordinal());
+        this.dataTracker.set(BOAT_TYPE, boatType.ordinal());
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(BOAT_TYPE, Type.LUNAR.ordinal());
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(BOAT_TYPE, Type.LUNAR.ordinal());
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
-        compound.putString("Type", this.getSLBoatType().getName());
+    protected void writeCustomDataToNbt(NbtCompound nbtCompound) {
+        nbtCompound.putString("Type", this.getSLBoatType().getName());
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains("Type", 8)) {
-            this.setSLBoatType(SLBoat.Type.getTypeFromString(compound.getString("Type")));
+    protected void readCustomDataFromNbt(NbtCompound nbtCompound) {
+        if (nbtCompound.contains("Type", 8)) {
+            this.setSLBoatType(SLBoat.Type.getTypeFromString(nbtCompound.getString("Type")));
         }
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+        return new EntitySpawnS2CPacket(this);
     }
 
     public enum Type {
-        LUNAR(BlockInit.LUNAR_PLANKS.get(), "lunar"),
-        NORTHLAND(BlockInit.NORTHLAND_PLANKS.get(), "northland"),
-        STARLIGHT_MANGROVE(BlockInit.STARLIGHT_MANGROVE_PLANKS.get(), "starlight_mangrove"),
+        LUNAR((Block) BlockInit.LUNAR_PLANKS, "lunar"),
+        NORTHLAND((Block) BlockInit.NORTHLAND_PLANKS, "northland"),
+        STARLIGHT_MANGROVE((Block) BlockInit.STARLIGHT_MANGROVE_PLANKS, "starlight_mangrove"),
         ;
 
         private final String name;

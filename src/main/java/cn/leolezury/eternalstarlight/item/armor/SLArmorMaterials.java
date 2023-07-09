@@ -4,8 +4,10 @@ import cn.leolezury.eternalstarlight.EternalStarlight;
 import cn.leolezury.eternalstarlight.init.ItemInit;
 import cn.leolezury.eternalstarlight.init.SoundEventInit;
 import net.minecraft.Util;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.LazyLoadedValue;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,7 +16,7 @@ import java.util.EnumMap;
 import java.util.function.Supplier;
 
 public enum SLArmorMaterials implements ArmorMaterial {
-    SWAMP_SILVER(EternalStarlight.MOD_ID + ":swamp_silver", 33, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266649_) -> {
+    SWAMP_SILVER(EternalStarlight.MODID + ":swamp_silver", 33, Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266649_) -> {
         p_266649_.put(ArmorItem.Type.BOOTS, 3);
         p_266649_.put(ArmorItem.Type.LEGGINGS, 6);
         p_266649_.put(ArmorItem.Type.CHESTPLATE, 8);
@@ -34,7 +36,7 @@ public enum SLArmorMaterials implements ArmorMaterial {
     private final SoundEvent sound;
     private final float toughness;
     private final float knockbackResistance;
-    private final LazyLoadedValue<Ingredient> repairIngredient;
+    private final Ingredient repairIngredient;
 
     private SLArmorMaterials(String p_268171_, int p_268303_, EnumMap<ArmorItem.Type, Integer> p_267941_, int p_268086_, SoundEvent p_268145_, float p_268058_, float p_268180_, Supplier<Ingredient> p_268256_) {
         this.name = p_268171_;
