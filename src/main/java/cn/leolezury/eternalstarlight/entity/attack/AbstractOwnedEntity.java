@@ -1,27 +1,27 @@
 package cn.leolezury.eternalstarlight.entity.attack;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public abstract class AbstractOwnedEntity extends Entity {
-    public AbstractOwnedEntity(EntityType<?> p_19870_, Level p_19871_) {
-        super(p_19870_, p_19871_);
+    World world;
+    public AbstractOwnedEntity(EntityType<?> type, World world) {
+        super(type, world);
     }
     @Nullable
     private LivingEntity owner;
@@ -37,52 +37,52 @@ public abstract class AbstractOwnedEntity extends Entity {
     private LivingEntity target;
     @Nullable
     private UUID targetId;
-    public LivingEntity getTarget() {
+    public LivingEntity getGoal() {
         return target;
     }
-    public void setTarget(LivingEntity target) {
+    public void setGoal(LivingEntity target) {
         this.target = target;
     }
-    protected static final EntityDataAccessor<Integer> SPAWNED_TICKS = SynchedEntityData.defineId(AbstractOwnedEntity.class, EntityDataSerializers.INT);
+    protected static final TrackedData<Integer> SPAWNED_TICKS = DataTracker.registerData(AbstractOwnedEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public int getSpawnedTicks() {
-        return entityData.get(SPAWNED_TICKS);
+        return dataTracker.get(SPAWNED_TICKS);
     }
     public void setSpawnedTicks(int spawnedTicks) {
-        entityData.set(SPAWNED_TICKS, spawnedTicks);
+        dataTracker.set(SPAWNED_TICKS, spawnedTicks);
     }
-    protected static final EntityDataAccessor<Integer> ATTACK_MODE = SynchedEntityData.defineId(AbstractOwnedEntity.class, EntityDataSerializers.INT);
+    protected static final TrackedData<Integer> ATTACK_MODE = DataTracker.registerData(AbstractOwnedEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public int getAttackMode() {
-        return entityData.get(ATTACK_MODE);
+        return dataTracker.get(ATTACK_MODE);
     }
     public void setAttackMode(int attackMode) {
-        entityData.set(ATTACK_MODE, attackMode);
+        dataTracker.set(ATTACK_MODE, attackMode);
     }
 
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
-        if (compoundTag.hasUUID("Owner")) {
-            ownerId = compoundTag.getUUID("Owner");
+    protected void readAdditionalSaveData(NbtCompound nbtCompound) {
+        if (nbtCompound.containsUuid("Owner")) {
+            ownerId = nbtCompound.getUuid("Owner");
         }
-        if (compoundTag.hasUUID("Target")) {
-            targetId = compoundTag.getUUID("Target");
+        if (nbtCompound.containsUuid("Target")) {
+            targetId = nbtCompound.getUuid("Target");
         }
-        setSpawnedTicks(compoundTag.getInt("SpawnedTicks"));
-        setAttackMode(compoundTag.getInt("AttackMode"));
+        setSpawnedTicks(nbtCompound.getInt("SpawnedTicks"));
+        setAttackMode(nbtCompound.getInt("AttackMode"));
     }
 
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    protected void addAdditionalSaveData(NbtCompound nbtCompound) {
         if (owner != null) {
-            compoundTag.putUUID("Owner", owner.getUUID());
+            nbtCompound.putUuid("Owner", owner.getUuid());
         }
         if (target != null) {
-            compoundTag.putUUID("Target", target.getUUID());
+            nbtCompound.putUuid("Target", target.getUuid());
         }
-        compoundTag.putInt("SpawnedTicks", getSpawnedTicks());
-        compoundTag.putInt("AttackMode", getAttackMode());
+        nbtCompound.putInt("SpawnedTicks", getSpawnedTicks());
+        nbtCompound.putInt("AttackMode", getAttackMode());
     }
 
     protected void defineSynchedData() {
-        entityData.define(SPAWNED_TICKS, 0);
-        entityData.define(ATTACK_MODE, 0);
+        dataTracker.startTracking(SPAWNED_TICKS, 0);
+        dataTracker.startTracking(ATTACK_MODE, 0);
     }
 
     public boolean shouldContinueToTick() {
@@ -90,8 +90,8 @@ public abstract class AbstractOwnedEntity extends Entity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
+    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+        return new EntitySpawnS2CPacket(this);
     }
 
     protected float getSoundVolume() {
@@ -103,8 +103,8 @@ public abstract class AbstractOwnedEntity extends Entity {
     }
 
     @Override
-    public boolean hurt(DamageSource damageSource, float amount) {
-        if (damageSource.equals(damageSources().fellOutOfWorld())) {
+    public boolean damage(DamageSource damageSource, float amount) {
+        if (damageSource.equals(getDamageSources().outOfWorld())) {
             discard();
         }
         return false;
@@ -113,9 +113,9 @@ public abstract class AbstractOwnedEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide) {
+        if (!world.isClient) {
             if (owner == null && ownerId != null) {
-                if (((ServerLevel)this.level()).getEntity(ownerId) instanceof LivingEntity livingEntity) {
+                if (((ServerWorld)this.world).getEntity(ownerId) instanceof LivingEntity livingEntity) {
                     owner = livingEntity;
                 }
                 if (owner == null) {
@@ -123,7 +123,7 @@ public abstract class AbstractOwnedEntity extends Entity {
                 }
             }
             if (target == null && targetId != null) {
-                if (((ServerLevel)this.level()).getEntity(targetId) instanceof LivingEntity livingEntity) {
+                if (((ServerWorld)this.world).getEntity(targetId) instanceof LivingEntity livingEntity) {
                     target = livingEntity;
                 }
                 if (target == null) {
@@ -133,11 +133,11 @@ public abstract class AbstractOwnedEntity extends Entity {
             if (shouldContinueToTick()) {
                 setSpawnedTicks(getSpawnedTicks() + 1);
             }
-            this.move(MoverType.SELF, this.getDeltaMovement());
-            if (!onGround() && !isNoGravity()) {
-                setDeltaMovement(getDeltaMovement().add(0, isNoGravity() ? 0 : -0.2, 0));
+            this.move(MovementType.SELF, this.getVelocity());
+            if (!this.onGround/*onGround()*/ && !hasNoGravity()) {
+                setVelocity(getVelocity().add(0, hasNoGravity() ? 0 : -0.2, 0));
             }
-            setDeltaMovement(getDeltaMovement().scale(0.8));
+            setVelocity(getVelocity().multiply/*.scale*/(0.8));
         }
     }
 }

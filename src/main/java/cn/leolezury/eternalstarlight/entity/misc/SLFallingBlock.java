@@ -1,8 +1,14 @@
 package cn.leolezury.eternalstarlight.entity.misc;
 
 import cn.leolezury.eternalstarlight.init.EntityInit;
+import net.minecraft.block.BlockState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -11,6 +17,9 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
@@ -25,25 +34,25 @@ import java.util.Optional;
 public class SLFallingBlock extends Entity {
     public int duration;
 
-    protected static final EntityDataAccessor<BlockPos> DATA_START_POS = SynchedEntityData.defineId(SLFallingBlock.class, EntityDataSerializers.BLOCK_POS);
+    protected static final TrackedData<BlockPos> DATA_START_POS = DataTracker.registerData(SLFallingBlock.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
-    private static final EntityDataAccessor<Optional<BlockState>> BLOCK_STATE = SynchedEntityData.defineId(SLFallingBlock.class, EntityDataSerializers.OPTIONAL_BLOCK_STATE);
+    private static final TrackedData<Optional<BlockState>> BLOCK_STATE = DataTracker.registerData(SLFallingBlock.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
 
-    public SLFallingBlock(EntityType<SLFallingBlock> type, Level level) {
-        super(type, level);
+    public SLFallingBlock(EntityType<SLFallingBlock> type, World world) {
+        super(type, world);
         this.duration = 20;
     }
 
-    public SLFallingBlock(Level p_31953_, double p_31954_, double p_31955_, double p_31956_, BlockState p_31957_, int duration) {
-        this(EntityInit.FALLING_BLOCK.get(), p_31953_);
-        setBlock(p_31957_);
-        setPos(p_31954_, p_31955_ + ((1.0F - getBbHeight()) / 2.0F), p_31956_);
-        setDeltaMovement(Vec3.ZERO);
+    public SLFallingBlock(World world, double x, double y, double z, BlockState blockState, int duration) {
+        this(EntityInit.FALLING_BLOCK, blockState);
+        setBlock(blockState);
+        setPos(x, y + ((1.0F - getHeight()) / 2.0F), z);
+        setVelocity(Vec3d.ZERO);
         this.duration = duration;
-        this.xo = p_31954_;
-        this.yo = p_31955_;
-        this.zo = p_31956_;
-        setStartPos(blockPosition());
+        this.prevX = x;
+        this.prevY = y;
+        this.prevZ = z;
+        setStartPos(getBlockPos());
     }
 
     public void setStartPos(BlockPos p_31960_) {

@@ -3,17 +3,23 @@ package cn.leolezury.eternalstarlight.entity.attack;
 import cn.leolezury.eternalstarlight.entity.misc.CameraShake;
 import cn.leolezury.eternalstarlight.init.DamageTypeInit;
 import cn.leolezury.eternalstarlight.init.ParticleInit;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.World;
 
 import java.util.Random;
 
 public class Vine extends AbstractOwnedEntity {
-    public Vine(EntityType<?> p_19870_, Level p_19871_) {
-        super(p_19870_, p_19871_);
+    public Vine(EntityType<?> type, World world) {
+        super(type, world);
+    }
+
+    @Override
+    protected void initDataTracker() {
+
     }
 
     @Override
@@ -24,33 +30,43 @@ public class Vine extends AbstractOwnedEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide) {
+        if (!world.isClient) {
             if (getSpawnedTicks() >= 200) {
-                discard();
+                this.discard();
             }
             if (getSpawnedTicks() == 10) {
-                CameraShake.cameraShake(level(), position(), 30, 0.001f, 20, 10);
+                CameraShake.cameraShake(world, getPos(), 30, 0.001f, 20, 10);
             }
             if (getSpawnedTicks() > 40 && getOwner() != null) {
                 if (getAttackMode() == 0) {
-                    for (LivingEntity livingEntity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(0.5))) {
-                        if (!livingEntity.getUUID().equals(getOwner().getUUID())) {
-                            livingEntity.hurt(DamageTypeInit.getIndirectEntityDamageSource(level(), DamageTypeInit.POISON, this, getOwner()), 4);
+                    for (LivingEntity livingEntity : world.getNonSpectatingEntities(LivingEntity.class, getBoundingBox().expand(0.5))) {
+                        if (!livingEntity.getUuid().equals(getOwner().getUuid())) {
+                            livingEntity.damage(DamageTypeInit.getIndirectEntityDamageSource(world, DamageTypeInit.POISON, this, getOwner()), 4);
                         }
                     }
                 }
                 if (getAttackMode() == 1) {
-                    for (LivingEntity livingEntity : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(0.5))) {
-                        if (!livingEntity.getUUID().equals(getOwner().getUUID())) {
-                            livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4));
-                            livingEntity.hurt(DamageTypeInit.getIndirectEntityDamageSource(level(), DamageTypeInit.POISON, this, getOwner()), 1);
+                    for (LivingEntity livingEntity : world.getNonSpectatingEntities(LivingEntity.class, getBoundingBox().expand(0.5))) {
+                        if (!livingEntity.getUuid().equals(getOwner().getUuid())) {
+                            livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 20, 4));
+                            livingEntity.damage(DamageTypeInit.getIndirectEntityDamageSource(world, DamageTypeInit.POISON, this, getOwner()), 1);
                         }
                     }
                 }
             }
         } else {
             Random random = new Random();
-            level().addParticle(ParticleInit.POISON.get(), getX() + (random.nextDouble() - 0.5) * 1, getY() + 0.25 + (random.nextDouble() - 0.5) * 1, getZ() + (random.nextDouble() - 0.5) * 1, 0, 0, 0);
+            world.addParticle(ParticleInit.POISON, getX() + (random.nextDouble() - 0.5) * 1, getY() + 0.25 + (random.nextDouble() - 0.5) * 1, getZ() + (random.nextDouble() - 0.5) * 1, 0, 0, 0);
         }
+    }
+
+    @Override
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+
+    }
+
+    @Override
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+
     }
 }
