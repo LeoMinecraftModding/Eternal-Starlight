@@ -2,18 +2,20 @@ package cn.leolezury.eternalstarlight.entity.boss;
 
 import cn.leolezury.eternalstarlight.datagen.generator.DamageTypeGenerator;
 import cn.leolezury.eternalstarlight.entity.attack.FireColumn;
-import cn.leolezury.eternalstarlight.entity.attack.beam.LaserShooter;
+import cn.leolezury.eternalstarlight.entity.attack.beam.LaserCaster;
 import cn.leolezury.eternalstarlight.entity.attack.beam.StarlightGolemBeam;
+import cn.leolezury.eternalstarlight.entity.boss.bossevent.SLServerBossEvent;
 import cn.leolezury.eternalstarlight.entity.misc.CameraShake;
 import cn.leolezury.eternalstarlight.entity.misc.SLFallingBlock;
+import cn.leolezury.eternalstarlight.event.client.ClientEvents;
 import cn.leolezury.eternalstarlight.init.BlockInit;
 import cn.leolezury.eternalstarlight.init.EntityInit;
 import cn.leolezury.eternalstarlight.init.ParticleInit;
 import cn.leolezury.eternalstarlight.init.SoundEventInit;
 import cn.leolezury.eternalstarlight.util.MathUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -37,17 +39,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidType;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class StarlightGolem extends AbstractSLBoss implements LaserShooter {
+public class StarlightGolem extends AbstractSLBoss implements LaserCaster {
     public StarlightGolem(EntityType<? extends AbstractSLBoss> entityType, Level level) {
         super(entityType, level);
     }
-    private final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
+    private final SLServerBossEvent bossEvent = new SLServerBossEvent(this, getUUID(), BossEvent.BossBarColor.BLUE, true);
 
     public AnimationState energyBeamAnimationState = new AnimationState();
     public AnimationState flameAnimationState = new AnimationState();
@@ -64,6 +68,12 @@ public class StarlightGolem extends AbstractSLBoss implements LaserShooter {
 
     public boolean canHurt() {
         return getLitEnergyBlocks().size() == 0;
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        bossEvent.setId(getUUID());
     }
 
     public void startSeenByPlayer(ServerPlayer serverPlayer) {
@@ -255,11 +265,23 @@ public class StarlightGolem extends AbstractSLBoss implements LaserShooter {
         return list;
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void handleEntityEvent(byte id) {
+        if (id == ClientEvents.BOSS_MUSIC_ID) {
+            ClientEvents.handleEntityEvent(this, id);
+        } else {
+            super.handleEntityEvent(id);
+        }
+    }
+
     @Override
     public void aiStep() {
         super.aiStep();
+        bossEvent.update();
         if (!level().isClientSide) {
-            bossEvent.setProgress(getHealth() / getMaxHealth());
+            if (!isSilent()) {
+                this.level().broadcastEntityEvent(this, (byte)ClientEvents.BOSS_MUSIC_ID);
+            }
             setDeltaMovement(0, getDeltaMovement().y, 0);
             LivingEntity target = getTarget();
             if (energyBeamCoolDown > 0) {

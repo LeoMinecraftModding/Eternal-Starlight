@@ -2,10 +2,8 @@ package cn.leolezury.eternalstarlight.client.model;
 
 import cn.leolezury.eternalstarlight.EternalStarlight;
 import cn.leolezury.eternalstarlight.client.model.animation.BoarwarfAnimation;
+import cn.leolezury.eternalstarlight.client.model.animation.model.AnimatedEntityModel;
 import cn.leolezury.eternalstarlight.entity.npc.boarwarf.Boarwarf;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -15,24 +13,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class BoarwarfModel<T extends Boarwarf> extends HierarchicalModel<T> {
+public class BoarwarfModel<T extends Boarwarf> extends AnimatedEntityModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(EternalStarlight.MOD_ID, "boarwarf"), "main");
     private final ModelPart root;
-    private final ModelPart body;
     private final ModelPart head;
-    private final ModelPart arms;
-    private final ModelPart right_leg;
-    private final ModelPart left_leg;
-    private final ModelPart left_item;
 
     public BoarwarfModel(ModelPart root) {
         this.root = root;
-        this.body = root.getChild("body");
         this.head = root.getChild("head");
-        this.arms = root.getChild("arms");
-        this.right_leg = root.getChild("right_leg");
-        this.left_leg = root.getChild("left_leg");
-        this.left_item = root.getChild("left_item");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -62,7 +50,7 @@ public class BoarwarfModel<T extends Boarwarf> extends HierarchicalModel<T> {
 
         PartDefinition left_leg = partdefinition.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.9F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)).mirror(false), PartPose.offset(1.9F, 12.0F, 0.0F));
 
-        PartDefinition left_item = partdefinition.addOrReplaceChild("left_item", CubeListBuilder.create(), PartPose.offset(6.0F, 9.0F, 1.0F));
+        //PartDefinition left_item = partdefinition.addOrReplaceChild("left_item", CubeListBuilder.create(), PartPose.offset(6.0F, 9.0F, 1.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
@@ -72,19 +60,8 @@ public class BoarwarfModel<T extends Boarwarf> extends HierarchicalModel<T> {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         head.yRot = netHeadYaw * ((float)Math.PI / 180F);
         head.xRot = headPitch * ((float)Math.PI / 180F);
-        float f = Math.min((float)entity.getDeltaMovement().horizontalDistanceSqr() * 9000.0F, 2.0F);
-        this.animate(entity.walkingAnimationState, BoarwarfAnimation.WALK, ageInTicks, f * entity.getEntitySpeed());
+        this.animateWalk(BoarwarfAnimation.WALK, limbSwing, limbSwingAmount, 1.0f, 2.5f);
         this.animate(entity.idleAnimationState, BoarwarfAnimation.IDLE, ageInTicks, 0.2f);
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        arms.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        right_leg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        left_leg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        left_item.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

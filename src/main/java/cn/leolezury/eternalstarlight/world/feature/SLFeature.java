@@ -50,4 +50,8 @@ public abstract class SLFeature<FC extends FeatureConfiguration> extends Feature
             setBlock(worldGenLevel, pos, state);
         }
     }
+
+    protected BlockPos getChunkCoordinate(BlockPos origin) {
+        return new BlockPos((origin.getX() / 16) * 16, origin.getY(), (origin.getZ() / 16) * 16);
+    }
 }

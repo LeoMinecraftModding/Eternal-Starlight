@@ -96,7 +96,7 @@ public abstract class AbstractLaserBeam extends Entity {
         }
 
         if (caster != null) {
-            if (caster instanceof LaserShooter shooter) {
+            if (caster instanceof LaserCaster shooter) {
                 if (shooter.shouldLaserFollowHead()) {
                     renderYaw = (float) ((caster.yHeadRot + 90.0d) * Math.PI / 180.0d);
                     renderPitch = (float) (-caster.getXRot() * Math.PI / 180.0d);
@@ -300,7 +300,7 @@ public abstract class AbstractLaserBeam extends Entity {
     }
 
     public void updateRotations() {
-        if (caster instanceof LaserShooter shooter && !shooter.shouldLaserFollowHead()) {
+        if (caster instanceof LaserCaster shooter && !shooter.shouldLaserFollowHead()) {
             shooter.lookAtLaserEnd(new Vec3(endPosX, endPosY, endPosZ));
             Vec3 wantedPos = shooter.getLaserWantedPos();
 

@@ -12,6 +12,9 @@ public class SoundEventInit {
 
     public static final RegistryObject<SoundEvent> MUSIC_DIMENSION_SL = register("music.dimension.eternal_starlight");
 
+    public static final RegistryObject<SoundEvent> MUSIC_BOSS = register("music.boss.common");
+
+    public static final RegistryObject<SoundEvent> ARMOR_EQUIP_AETHERSENT = register("item.armor.equip_aethersent");
     public static final RegistryObject<SoundEvent> ARMOR_EQUIP_THERMAL_SPRINGSTONE = register("item.armor.equip_thermal_springstone");
     public static final RegistryObject<SoundEvent> ARMOR_EQUIP_SWAMP_SILVER = register("item.armor.equip_swamp_silver");
 

@@ -75,7 +75,7 @@
                     "half": "lower"
                   }
                 },
-                "weight": 2
+                "weight": 1
               }
             ]
           }
@@ -91,7 +91,7 @@
         }
       ]
     },
-    "tries": 64,
+    "tries": 128,
     "xz_spread": 7,
     "y_spread": 3
   }

@@ -2,10 +2,8 @@ package cn.leolezury.eternalstarlight.client.model;
 
 import cn.leolezury.eternalstarlight.EternalStarlight;
 import cn.leolezury.eternalstarlight.client.model.animation.LunarMonstrosityAnimation;
+import cn.leolezury.eternalstarlight.client.model.animation.model.AnimatedEntityModel;
 import cn.leolezury.eternalstarlight.entity.boss.LunarMonstrosity;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -14,18 +12,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.List;
+
 @OnlyIn(Dist.CLIENT)
-public class LunarMonstrosityModel<T extends LunarMonstrosity> extends HierarchicalModel<T> {
+public class LunarMonstrosityModel<T extends LunarMonstrosity> extends AnimatedEntityModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(EternalStarlight.MOD_ID, "moonflower"), "main");
     private final ModelPart root;
     private final ModelPart lower_body;
-    private final ModelPart base;
+    private final ModelPart upper_body;
     private final ModelPart head;
 
     public LunarMonstrosityModel(ModelPart root) {
         this.root = root;
         lower_body = root.getChild("lower_body");
-        base = root.getChild("base");
+        upper_body = root.getChild("lower_body").getChild("upper_body");
         head = root.getChild("lower_body").getChild("upper_body").getChild("head");
     }
 
@@ -72,11 +72,15 @@ public class LunarMonstrosityModel<T extends LunarMonstrosity> extends Hierarchi
         if (entity.getAttackTicks() >= 0 && entity.getAttackState() != 0 && entity.deathTime <= 0) {
             int state = entity.getAttackState();
             switch (state) {
+                case -2 -> {
+                    entity.headPos = ModelUtils.getModelPosition(entity, netHeadYaw, List.of(head, upper_body, lower_body));
+                }
                 case -1 -> {
                     animate(entity.switchPhaseAnimationState, LunarMonstrosityAnimation.SWITCH_PHASE, ageInTicks);
                 }
                 case 1 -> {
                     animate(entity.toxicBreathAnimationState, LunarMonstrosityAnimation.TOXIC_BREATH, ageInTicks);
+                    entity.headPos = ModelUtils.getModelPosition(entity, netHeadYaw, List.of(head, upper_body, lower_body));
                 }
                 case 2 -> {
                     animate(entity.sporeAnimationState, LunarMonstrosityAnimation.SPORE, ageInTicks);
@@ -101,12 +105,6 @@ public class LunarMonstrosityModel<T extends LunarMonstrosity> extends Hierarchi
         if (entity.deathTime > 0) {
             animate(entity.deathAnimationState, LunarMonstrosityAnimation.DEATH, ageInTicks);
         }
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        lower_body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

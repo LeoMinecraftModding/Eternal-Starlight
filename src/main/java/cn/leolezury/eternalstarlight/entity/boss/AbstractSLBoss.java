@@ -1,5 +1,6 @@
 package cn.leolezury.eternalstarlight.entity.boss;
 
+import cn.leolezury.eternalstarlight.event.client.ClientEvents;
 import cn.leolezury.eternalstarlight.init.ItemInit;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -22,8 +23,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class AbstractSLBoss extends Monster {
-    protected AbstractSLBoss(EntityType<? extends Monster> p_33002_, Level p_33003_) {
-        super(p_33002_, p_33003_);
+    protected AbstractSLBoss(EntityType<? extends Monster> type, Level level) {
+        super(type, level);
+        if (level.isClientSide) {
+            ClientEvents.BOSSES.add(this);
+        }
     }
     
     protected static final EntityDataAccessor<Integer> PHASE = SynchedEntityData.defineId(AbstractSLBoss.class, EntityDataSerializers.INT);

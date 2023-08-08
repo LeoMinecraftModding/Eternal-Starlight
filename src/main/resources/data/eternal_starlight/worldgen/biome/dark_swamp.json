@@ -1,7 +1,6 @@
 {
   "carvers": {
     "air": [
-      "minecraft:canyon",
       "minecraft:cave",
       "minecraft:cave_extra_underground"
     ]
@@ -9,17 +8,17 @@
   "downfall": 0.9,
   "has_precipitation": false,
   "effects": {
-    "fog_color": 3091031,
+    "fog_color": 1310740,
     "foliage_color": 7890120,
     "grass_color": 3091031,
-    "sky_color": 5658761,
-    "water_color": 6187416,
-    "water_fog_color": 6187416,
+    "sky_color": 1310740,
+    "water_color": 11494560,
+    "water_fog_color": 11494560,
     "music": {
       "sound": "eternal_starlight:music.dimension.eternal_starlight",
-      "min_delay": 12000,
-      "max_delay": 24000,
-      "replace_current_music": false
+      "min_delay": 600,
+      "max_delay": 1200,
+      "replace_current_music": true
     },
     "particle": {
       "options": {
@@ -71,6 +70,7 @@
     [],
     [
       "eternal_starlight:swamp_lake",
+      "eternal_starlight:swamp_water",
       "eternal_starlight:cave_spring"
     ],
     [],
@@ -90,7 +90,7 @@
       "minecraft:spring_water",
       "eternal_starlight:fallen_starlight_mangrove_log",
       "eternal_starlight:starlight_flower",
-      "eternal_starlight:sl_grass"
+      "eternal_starlight:swamp_grass"
     ],
     [
       "minecraft:glow_lichen",

@@ -18,13 +18,13 @@ public interface BerriesVines {
     VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 16.0D, 15.0D);
     BooleanProperty BERRIES = BlockStateProperties.BERRIES;
 
-    static InteractionResult use(BlockState p_152954_, Level p_152955_, BlockPos p_152956_) {
-        if (p_152954_.getValue(BERRIES)) {
-            Block.popResource(p_152955_, p_152956_, new ItemStack(ItemInit.LUNAR_BERRIES.get(), 1));
-            float f = Mth.randomBetween(p_152955_.random, 0.8F, 1.2F);
-            p_152955_.playSound(null, p_152956_, SoundEvents.CAVE_VINES_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, f);
-            p_152955_.setBlock(p_152956_, p_152954_.setValue(BERRIES, Boolean.valueOf(false)), 2);
-            return InteractionResult.sidedSuccess(p_152955_.isClientSide);
+    static InteractionResult use(BlockState state, Level level, BlockPos pos) {
+        if (state.getValue(BERRIES)) {
+            Block.popResource(level, pos, new ItemStack(ItemInit.LUNAR_BERRIES.get(), 1));
+            float f = Mth.randomBetween(level.random, 0.8F, 1.2F);
+            level.playSound(null, pos, SoundEvents.CAVE_VINES_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, f);
+            level.setBlock(pos, state.setValue(BERRIES, Boolean.valueOf(false)), 2);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         } else {
             return InteractionResult.PASS;
         }

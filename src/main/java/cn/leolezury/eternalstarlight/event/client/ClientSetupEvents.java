@@ -2,20 +2,24 @@ package cn.leolezury.eternalstarlight.event.client;
 
 import cn.leolezury.eternalstarlight.EternalStarlight;
 import cn.leolezury.eternalstarlight.block.entity.SLWoodTypes;
+import cn.leolezury.eternalstarlight.client.SLDimensionSpecialEffects;
 import cn.leolezury.eternalstarlight.client.model.*;
 import cn.leolezury.eternalstarlight.client.model.armor.ThermalSpringStoneArmorModel;
 import cn.leolezury.eternalstarlight.client.model.item.GlowingBakedModel;
 import cn.leolezury.eternalstarlight.client.particle.lightning.LightningParticle;
 import cn.leolezury.eternalstarlight.client.renderer.*;
+import cn.leolezury.eternalstarlight.client.renderer.world.SLSkyRenderer;
 import cn.leolezury.eternalstarlight.entity.misc.SLBoat;
 import cn.leolezury.eternalstarlight.init.*;
 import cn.leolezury.eternalstarlight.item.weapon.CrystalCrossbowItem;
+import cn.leolezury.eternalstarlight.message.OpenSLBookMessage;
 import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.LayerDefinitions;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.particle.EndRodParticle;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
@@ -30,10 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -42,29 +43,42 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = EternalStarlight.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientSetupEvents {
+    private static int registered;
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
+        EternalStarlight.NETWORK_WRAPPER.registerMessage(registered++, OpenSLBookMessage.class, OpenSLBookMessage::write, OpenSLBookMessage::read, OpenSLBookMessage.Handler::handle);
+
         BlockEntityRenderers.register(BlockEntityInit.SIGN_BLOCK_ENTITY.get(), SignRenderer::new);
         BlockEntityRenderers.register(BlockEntityInit.HANGING_SIGN_BLOCK_ENTITY.get(), HangingSignRenderer::new);
 
-        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("pull"), (p_174620_, p_174621_, p_174622_, p_174623_) -> {
-            if (p_174622_ == null) {
+        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("pull"), (stack, level, entity, i) -> {
+            if (entity == null) {
                 return 0.0F;
             } else {
-                return CrystalCrossbowItem.isCharged(p_174620_) ? 0.0F : (float)(p_174620_.getUseDuration() - p_174622_.getUseItemRemainingTicks()) / (float)CrystalCrossbowItem.getChargeDuration(p_174620_);
+                return CrystalCrossbowItem.isCharged(stack) ? 0.0F : (float)(stack.getUseDuration() - entity.getUseItemRemainingTicks()) / (float)CrystalCrossbowItem.getChargeDuration(stack);
             }
         });
-        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("pulling"), (p_174615_, p_174616_, p_174617_, p_174618_) -> p_174617_ != null && p_174617_.isUsingItem() && p_174617_.getUseItem() == p_174615_ && !CrystalCrossbowItem.isCharged(p_174615_) ? 1.0F : 0.0F);
-        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("charged"), (p_174610_, p_174611_, p_174612_, p_174613_) -> p_174612_ != null && CrystalCrossbowItem.isCharged(p_174610_) ? 1.0F : 0.0F);
-        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("firework"), (p_174605_, p_174606_, p_174607_, p_174608_) -> p_174607_ != null && CrystalCrossbowItem.isCharged(p_174605_) && CrystalCrossbowItem.containsChargedProjectile(p_174605_, Items.FIREWORK_ROCKET) ? 1.0F : 0.0F);
-        ItemProperties.register(ItemInit.MOONRING_BOW.get(), new ResourceLocation("pull"), (p_174635_, p_174636_, p_174637_, p_174638_) -> {
-            if (p_174637_ == null) {
+        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("pulling"), (stack, level, entity, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack && !CrystalCrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
+        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("charged"), (stack, level, entity, i) -> entity != null && CrystalCrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
+        ItemProperties.register(ItemInit.CRYSTAL_CROSSBOW.get(), new ResourceLocation("firework"), (stack, level, entity, i) -> entity != null && CrystalCrossbowItem.isCharged(stack) && CrystalCrossbowItem.containsChargedProjectile(stack, Items.FIREWORK_ROCKET) ? 1.0F : 0.0F);
+
+        ItemProperties.register(ItemInit.MOONRING_BOW.get(), new ResourceLocation("pull"), (stack, level, entity, i) -> {
+            if (entity == null) {
                 return 0.0F;
             } else {
-                return p_174637_.getUseItem() != p_174635_ ? 0.0F : (float)(p_174635_.getUseDuration() - p_174637_.getUseItemRemainingTicks()) / 20.0F;
+                return entity.getUseItem() != stack ? 0.0F : (float)(stack.getUseDuration() - entity.getUseItemRemainingTicks()) / 20.0F;
             }
         });
-        ItemProperties.register(ItemInit.MOONRING_BOW.get(), new ResourceLocation("pulling"), (p_174630_, p_174631_, p_174632_, p_174633_) -> p_174632_ != null && p_174632_.isUsingItem() && p_174632_.getUseItem() == p_174630_ ? 1.0F : 0.0F);
+        ItemProperties.register(ItemInit.MOONRING_BOW.get(), new ResourceLocation("pulling"), (stack, level, entity, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
+
+        ItemProperties.register(ItemInit.STARFALL_LONGBOW.get(), new ResourceLocation("pull"), (stack, level, entity, i) -> {
+            if (entity == null) {
+                return 0.0F;
+            } else {
+                return entity.getUseItem() != stack ? 0.0F : (float)(stack.getUseDuration() - entity.getUseItemRemainingTicks()) / 20.0F;
+            }
+        });
+        ItemProperties.register(ItemInit.STARFALL_LONGBOW.get(), new ResourceLocation("pulling"), (stack, level, entity, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
@@ -77,6 +91,12 @@ public class ClientSetupEvents {
             Sheets.addWoodType(SLWoodTypes.NORTHLAND);
             Sheets.addWoodType(SLWoodTypes.STARLIGHT_MANGROVE);
         });
+    }
+
+    @SubscribeEvent
+    public static void onRegisterDimEffects(RegisterDimensionSpecialEffectsEvent event) {
+        SLSkyRenderer.createStars();
+        event.register(new ResourceLocation(EternalStarlight.MOD_ID, "special_effect"), new SLDimensionSpecialEffects(160.0F, false, DimensionSpecialEffects.SkyType.NONE, false, false));
     }
 
     @SubscribeEvent
@@ -112,7 +132,7 @@ public class ClientSetupEvents {
     @SubscribeEvent
     public static void onRegisterRenderer(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(EntityInit.FALLING_BLOCK.get(), SLFallingBlockRenderer::new);
-        event.registerEntityRenderer(EntityInit.AETHERSENT_METEOR.get(), AetherSentMeteorRenderer::new);
+        event.registerEntityRenderer(EntityInit.AETHERSENT_METEOR.get(), AethersentMeteorRenderer::new);
         event.registerEntityRenderer(EntityInit.BOAT.get(), (context) -> new SLBoatRenderer(context, false));
         event.registerEntityRenderer(EntityInit.CHEST_BOAT.get(), (context) -> new SLBoatRenderer(context, true));
         event.registerEntityRenderer(EntityInit.CAMERA_SHAKE.get(), NothingRenderer::new);

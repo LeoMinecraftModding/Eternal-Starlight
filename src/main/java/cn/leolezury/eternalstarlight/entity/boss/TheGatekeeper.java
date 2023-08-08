@@ -2,6 +2,7 @@ package cn.leolezury.eternalstarlight.entity.boss;
 
 import cn.leolezury.eternalstarlight.datagen.generator.DamageTypeGenerator;
 import cn.leolezury.eternalstarlight.entity.ai.goal.TheGatekeeperTridentAttackGoal;
+import cn.leolezury.eternalstarlight.entity.boss.bossevent.SLServerBossEvent;
 import cn.leolezury.eternalstarlight.entity.misc.CameraShake;
 import cn.leolezury.eternalstarlight.entity.misc.SLFallingBlock;
 import cn.leolezury.eternalstarlight.event.server.ServerEvents;
@@ -13,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -44,7 +44,7 @@ public class TheGatekeeper extends AbstractSLBoss {
     public TheGatekeeper(EntityType<? extends AbstractSLBoss> entityType, Level level) {
         super(entityType, level);
     }
-    private final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
+    private final SLServerBossEvent bossEvent = new SLServerBossEvent(this, getUUID(), BossEvent.BossBarColor.PURPLE, false);
 
     protected static final EntityDataAccessor<Boolean> SLIM = SynchedEntityData.defineId(TheGatekeeper.class, EntityDataSerializers.BOOLEAN);
     public boolean isSlim() {
@@ -77,6 +77,7 @@ public class TheGatekeeper extends AbstractSLBoss {
         super.readAdditionalSaveData(compoundTag);
         setSlim(compoundTag.getBoolean("Slim"));
         gatekeeperName = compoundTag.getString("GatekeeperName");
+        bossEvent.setId(getUUID());
     }
 
     @Override
@@ -249,9 +250,9 @@ public class TheGatekeeper extends AbstractSLBoss {
     @Override
     public void aiStep() {
         super.aiStep();
+        bossEvent.update();
         if (!level().isClientSide) {
             setCustomName(Component.literal(gatekeeperName));
-            bossEvent.setProgress(getHealth() / getMaxHealth());
 
             setLeftHanded(false);
             if (!getOffhandItem().is(Items.SHIELD)) {

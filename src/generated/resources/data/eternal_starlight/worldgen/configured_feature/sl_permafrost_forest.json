@@ -5,13 +5,6 @@
     "features": [
       {
         "chance": 0.25,
-        "feature": {
-          "feature": "minecraft:spruce",
-          "placement": []
-        }
-      },
-      {
-        "chance": 0.25,
         "feature": "eternal_starlight:northland_tree_checked"
       },
       {

@@ -356,8 +356,8 @@ public class CrystalCrossbowItem extends CrossbowItem {
         }
     }
 
-    public boolean useOnRelease(ItemStack p_150801_) {
-        return p_150801_.is(this);
+    public boolean useOnRelease(ItemStack stack) {
+        return stack.is(this);
     }
 
     public int getDefaultProjectileRange() {

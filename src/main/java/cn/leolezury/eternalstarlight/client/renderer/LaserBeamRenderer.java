@@ -60,7 +60,7 @@ public class LaserBeamRenderer<T extends AbstractLaserBeam> extends EntityRender
         if (frame < 0) {
             frame = 6;
         }
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(SLRenderType.getGlowingEffect(getTextureLocation(laserBeam)));
+        VertexConsumer ivertexbuilder = bufferIn.getBuffer(SLRenderType.glow(getTextureLocation(laserBeam)));
 
         renderStart(frame, matrixStackIn, ivertexbuilder, packedLightIn);
         renderBeam(length, 180f / (float) Math.PI * yaw, 180f / (float) Math.PI * pitch, frame, matrixStackIn, ivertexbuilder, packedLightIn);
@@ -104,7 +104,7 @@ public class LaserBeamRenderer<T extends AbstractLaserBeam> extends EntityRender
         }
         matrixStackIn.pushPose();
         Quaternionf sideQuat = side.getRotation();
-        sideQuat.mul((new Quaternionf()).rotationX(1.5707964F));
+        sideQuat.mul((new Quaternionf()).rotationX(90.0F * (float) Math.PI / 180f));
         matrixStackIn.mulPose(sideQuat);
         matrixStackIn.translate(0, 0, -0.01f);
         renderFlatQuad(frame, matrixStackIn, builder, packedLightIn);
@@ -128,16 +128,16 @@ public class LaserBeamRenderer<T extends AbstractLaserBeam> extends EntityRender
 
     private void renderBeam(float length, float yaw, float pitch, int frame, PoseStack matrixStackIn, VertexConsumer builder, int packedLightIn) {
         matrixStackIn.pushPose();
-        matrixStackIn.mulPose((new Quaternionf()).rotationX(1.5707964F));
-        matrixStackIn.mulPose((new Quaternionf()).rotationZ((yaw - 90.0F) * 0.017453292F));
-        matrixStackIn.mulPose((new Quaternionf()).rotationX(-pitch * 0.017453292F));
+        matrixStackIn.mulPose((new Quaternionf()).rotationX(90.0F * (float) Math.PI / 180f));
+        matrixStackIn.mulPose((new Quaternionf()).rotationZ((yaw - 90.0F) * (float) Math.PI / 180f));
+        matrixStackIn.mulPose((new Quaternionf()).rotationX(-pitch * (float) Math.PI / 180f));
         matrixStackIn.pushPose();
         matrixStackIn.mulPose((new Quaternionf()).rotationY(Minecraft.getInstance().gameRenderer.getMainCamera().getXRot() + 90.0F));
         drawBeam(length, frame, matrixStackIn, builder, packedLightIn);
         matrixStackIn.popPose();
         
         matrixStackIn.pushPose();
-        matrixStackIn.mulPose((new Quaternionf()).rotationY((-Minecraft.getInstance().gameRenderer.getMainCamera().getXRot() - 90.0F) * 0.017453292F));
+        matrixStackIn.mulPose((new Quaternionf()).rotationY((-Minecraft.getInstance().gameRenderer.getMainCamera().getXRot() - 90.0F) * (float) Math.PI / 180f));
         drawBeam(length, frame, matrixStackIn, builder, packedLightIn);
         matrixStackIn.popPose();
         matrixStackIn.popPose();

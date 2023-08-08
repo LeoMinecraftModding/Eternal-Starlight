@@ -1,29 +1,24 @@
 package cn.leolezury.eternalstarlight.client.model;
 
 import cn.leolezury.eternalstarlight.EternalStarlight;
-import cn.leolezury.eternalstarlight.client.model.animation.GatekeeperKeyframeAnimations;
 import cn.leolezury.eternalstarlight.client.model.animation.TheGatekeeperAnimation;
+import cn.leolezury.eternalstarlight.client.model.animation.model.AnimatedHumanoidModel;
 import cn.leolezury.eternalstarlight.entity.boss.TheGatekeeper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Vector3f;
-
-import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
-public class TheGatekeeperModel<T extends TheGatekeeper> extends HumanoidModel<T> {
+public class TheGatekeeperModel<T extends TheGatekeeper> extends AnimatedHumanoidModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(EternalStarlight.MOD_ID, "the_gatekeeper"), "main");
     public static final ModelLayerLocation SLIM_LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(EternalStarlight.MOD_ID, "the_gatekeeper_slim"), "main");
     public static final ModelLayerLocation INNER_ARMOR_LOCATION = new ModelLayerLocation(new ResourceLocation(EternalStarlight.MOD_ID, "the_gatekeeper"), "inner_armor");
@@ -32,7 +27,6 @@ public class TheGatekeeperModel<T extends TheGatekeeper> extends HumanoidModel<T
     private final ModelPart root;
     private final boolean slim;
     private boolean tridentAttack = false;
-    private static final Vector3f ANIMATION_VECTOR_CACHE = new Vector3f();
     
     public TheGatekeeperModel(ModelPart root, boolean slim) {
         super(root);
@@ -70,23 +64,10 @@ public class TheGatekeeperModel<T extends TheGatekeeper> extends HumanoidModel<T
                     .texOffs(48, 48).addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)), PartPose.offset(5.0F, 2.0F, 0.0F));
         }
 
-        //useless model parts to replace vanilla model parts
+        // useless model parts to replace vanilla model parts
         PartDefinition hat = partdefinition.addOrReplaceChild("hat", CubeListBuilder.create(), PartPose.offset(0.0F, 0.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
-    }
-
-    public Optional<ModelPart> getAnyDescendantWithName(String name) {
-        return name.equals("root") ? Optional.of(root) : root.getAllParts().filter((part) -> part.hasChild(name)).findFirst().map((part) -> part.getChild(name));
-    }
-
-    protected void animate(AnimationState state, AnimationDefinition definition, float speed) {
-        this.animate(state, definition, speed, 1.0F);
-    }
-
-    protected void animate(AnimationState state, AnimationDefinition definition, float speed, float f) {
-        state.updateTime(speed, f);
-        state.ifStarted((animState) -> GatekeeperKeyframeAnimations.animate(this, definition, animState.getAccumulatedTime(), 1.0F, ANIMATION_VECTOR_CACHE));
     }
 
     @Override
@@ -129,6 +110,7 @@ public class TheGatekeeperModel<T extends TheGatekeeper> extends HumanoidModel<T
         }
     }
 
+    // TODO: fix this
     public void renderHeadToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         this.headParts().forEach((modelPart) -> modelPart.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha));
     }
@@ -146,5 +128,10 @@ public class TheGatekeeperModel<T extends TheGatekeeper> extends HumanoidModel<T
         if (tridentAttack && arm == HumanoidArm.RIGHT) {
             stack.mulPose(Axis.YP.rotationDegrees(180.0F));
         }
+    }
+
+    @Override
+    public ModelPart root() {
+        return root;
     }
 }

@@ -50,8 +50,6 @@ public class Boarwarf extends PathfinderMob implements Npc, Merchant {
     private int sleepTicks = 0;
     public BlockPos homePos = BlockPos.ZERO;
     public Boarwarf chatTarget = null;
-
-    public final AnimationState walkingAnimationState = new AnimationState();
     public final AnimationState idleAnimationState = new AnimationState();
 
     protected static final EntityDataAccessor<Integer> HAIR_VARIANT = SynchedEntityData.defineId(Boarwarf.class, EntityDataSerializers.INT);
@@ -78,21 +76,12 @@ public class Boarwarf extends PathfinderMob implements Npc, Merchant {
         entityData.set(PROFESSION_VARIANT, variant);
     }
 
-    protected static final EntityDataAccessor<Float> ENTITY_SPEED = SynchedEntityData.defineId(Boarwarf.class, EntityDataSerializers.FLOAT);
-    public float getEntitySpeed() {
-        return entityData.get(ENTITY_SPEED);
-    }
-    public void setEntitySpeed(float speed) {
-        entityData.set(ENTITY_SPEED, speed);
-    }
-
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(HAIR_VARIANT, 0);
         entityData.define(BIOME_VARIANT, 0);
         entityData.define(PROFESSION_VARIANT, 0);
-        entityData.define(ENTITY_SPEED, 0.3f);
     }
 
     @Override
@@ -188,18 +177,6 @@ public class Boarwarf extends PathfinderMob implements Npc, Merchant {
 
     protected SoundEvent getYesOrNoSound(boolean yesSound) {
         return yesSound ? SoundEventInit.BOARWARF_YES.get() : SoundEventInit.BOARWARF_NO.get();
-    }
-
-    private boolean isMoving() {
-        boolean flag = this.onGround() || this.isInWaterOrBubble();
-        return flag && this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-6D;
-    }
-    private boolean isMovingInWater() {
-        return this.isMoving() && this.isInWater() && !this.isUnderWater() && this.getDeltaMovement().horizontalDistanceSqr() > 9.999999999999999E-6D;
-    }
-
-    private boolean isMovingOnLand() {
-        return this.isMoving() && !this.isUnderWater() && !this.isInWater();
     }
 
     @Override
@@ -312,7 +289,6 @@ public class Boarwarf extends PathfinderMob implements Npc, Merchant {
             if (level().getGameTime() % 40 == 0) {
                 this.heal(1);
             }
-            setEntitySpeed((float)(getMoveControl().getSpeedModifier() * getAttributeValue(Attributes.MOVEMENT_SPEED)));
             if (isSleeping()) {
                 sleepTicks++;
                 awakeTicks = 0;
@@ -348,11 +324,6 @@ public class Boarwarf extends PathfinderMob implements Npc, Merchant {
             }
         } else {
             this.idleAnimationState.startIfStopped(this.tickCount);
-            if (!this.isMovingOnLand() && !this.isMovingInWater()) {
-                this.walkingAnimationState.stop();
-            } else {
-                this.walkingAnimationState.startIfStopped(this.tickCount);
-            }
         }
     }
 

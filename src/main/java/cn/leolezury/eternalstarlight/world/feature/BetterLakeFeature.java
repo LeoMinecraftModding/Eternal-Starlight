@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
@@ -45,8 +46,8 @@ public class BetterLakeFeature extends SLFeature<BetterLakeFeature.Configuration
         List<BlockPos> barrierPositions = new ArrayList<>();
 
         for (int x = -xRadius; x <= xRadius; x++) {
-            for (int y = -yRadius; y <= yRadius; y++) {
-                for (int z = -zRadius; z <= zRadius; z++) {
+            for (int z = -zRadius; z <= zRadius; z++) {
+                for (int y = -yRadius; y <= yRadius; y++) {
                     BlockPos pos = origin.offset(x, y, z);
                     double param = Math.pow(x, 2) / Math.pow(xRadius, 2) + Math.pow(y, 2) / Math.pow(yRadius, 2) + Math.pow(z, 2) / Math.pow(zRadius, 2);
                     double threshold = 1 + 1.4 * fastNoiseLite.GetNoise(pos.getX(), pos.getY() * 2, pos.getZ());
@@ -83,7 +84,9 @@ public class BetterLakeFeature extends SLFeature<BetterLakeFeature.Configuration
 
         for (BlockPos fluidPos : fluidPositions) {
             if (fluidPos.getY() <= waterLevel && !level.getBlockState(fluidPos).is(BlockTags.FEATURES_CANNOT_REPLACE)) {
-                level.setBlock(fluidPos, fluidProvider.getState(random, fluidPos), 2);
+                BlockState state = fluidProvider.getState(random, fluidPos);
+                level.setBlock(fluidPos, state, 2);
+                level.scheduleTick(fluidPos, state.getFluidState().getType(), 20);
             }
         }
         for (BlockPos barrierPos : barrierPositions) {

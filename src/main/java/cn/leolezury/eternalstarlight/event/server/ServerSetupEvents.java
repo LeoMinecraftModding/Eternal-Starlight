@@ -30,6 +30,7 @@ public class ServerSetupEvents {
     public static void setup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(BlockInit.STARLIGHT_FLOWER.getId(), BlockInit.POTTED_STARLIGHT_FLOWER);
+            ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(BlockInit.SWAMP_ROSE.getId(), BlockInit.POTTED_SWAMP_ROSE);
             ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(BlockInit.LUNAR_SAPLING.getId(), BlockInit.POTTED_LUNAR_SAPLING);
             ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(BlockInit.NORTHLAND_SAPLING.getId(), BlockInit.POTTED_NORTHLAND_SAPLING);
             ((FlowerPotBlock) Blocks.FLOWER_POT).addPlant(BlockInit.STARLIGHT_MANGROVE_SAPLING.getId(), BlockInit.POTTED_STARLIGHT_MANGROVE_SAPLING);

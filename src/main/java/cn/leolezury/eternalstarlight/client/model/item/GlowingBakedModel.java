@@ -4,7 +4,6 @@ import cn.leolezury.eternalstarlight.client.renderer.SLRenderType;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -31,7 +30,7 @@ public class GlowingBakedModel extends BakedModelWrapper {
 
     @Override
     public List<RenderType> getRenderTypes(ItemStack itemStack, boolean fabulous) {
-        return List.of(SLRenderType.getGlowingEffect(TextureAtlas.LOCATION_BLOCKS));
+        return List.of(SLRenderType.glowCutout());
     }
 
     @Override

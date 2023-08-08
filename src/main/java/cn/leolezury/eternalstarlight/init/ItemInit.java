@@ -2,11 +2,13 @@ package cn.leolezury.eternalstarlight.init;
 
 import cn.leolezury.eternalstarlight.EternalStarlight;
 import cn.leolezury.eternalstarlight.entity.misc.SLBoat;
+import cn.leolezury.eternalstarlight.item.armor.AethersentArmorItem;
 import cn.leolezury.eternalstarlight.item.armor.SLArmorMaterials;
 import cn.leolezury.eternalstarlight.item.armor.SwampSilverArmorItem;
 import cn.leolezury.eternalstarlight.item.armor.ThermalSpringStoneArmorItem;
 import cn.leolezury.eternalstarlight.item.misc.LootBagItem;
 import cn.leolezury.eternalstarlight.item.misc.SLBoatItem;
+import cn.leolezury.eternalstarlight.item.misc.SLBookItem;
 import cn.leolezury.eternalstarlight.item.misc.SeekingEyeItem;
 import cn.leolezury.eternalstarlight.item.weapon.*;
 import net.minecraft.ChatFormatting;
@@ -28,8 +30,6 @@ public class ItemInit {
     public static final RegistryObject<Item> BLUE_CRYSTAL_MOSS_CARPET = ITEMS.register("blue_crystal_moss_carpet", () -> new BlockItem(BlockInit.BLUE_CRYSTAL_MOSS_CARPET.get(), new Item.Properties()));
     public static final RegistryObject<Item> RED_STARLIGHT_CRYSTAL_SHARD = ITEMS.register("red_starlight_crystal_shard", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> BLUE_STARLIGHT_CRYSTAL_SHARD = ITEMS.register("blue_starlight_crystal_shard", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> CRYSTAL_CROSSBOW = ITEMS.register("crystal_crossbow", () -> new CrystalCrossbowItem(new Item.Properties().stacksTo(1).durability(2000).rarity(STARLIGHT)));
-    public static final RegistryObject<Item> MOONRING_BOW = ITEMS.register("moonring_bow", () -> new MoonRingBowItem(new Item.Properties().stacksTo(1).durability(2000).rarity(STARLIGHT)));
     public static final RegistryObject<Item> LUNAR_BERRIES = ITEMS.register("lunar_berries", () -> new ItemNameBlockItem(BlockInit.BERRIES_VINES.get(), (new Item.Properties()).food((new FoodProperties.Builder()).nutrition(4).saturationMod(1.2F).build())));
 
     //lunar wood
@@ -97,7 +97,7 @@ public class ItemInit {
     public static final RegistryObject<Item> STARLIGHT_MANGROVE_BOAT = ITEMS.register("starlight_mangrove_boat", () -> new SLBoatItem(false, SLBoat.Type.STARLIGHT_MANGROVE, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> STARLIGHT_MANGROVE_CHEST_BOAT = ITEMS.register("starlight_mangrove_chest_boat", () -> new SLBoatItem(true, SLBoat.Type.STARLIGHT_MANGROVE, new Item.Properties().stacksTo(1)));
 
-
+    // common grass
     public static final RegistryObject<Item> STARLIGHT_FLOWER = ITEMS.register("starlight_flower", () -> new BlockItem(BlockInit.STARLIGHT_FLOWER.get(), new Item.Properties()));
     public static final RegistryObject<Item> NIGHT_SPROUTS = ITEMS.register("night_sprouts", () -> new BlockItem(BlockInit.NIGHT_SPROUTS.get(), new Item.Properties()));
     public static final RegistryObject<Item> GLOWING_NIGHT_SPROUTS = ITEMS.register("glowing_night_sprouts", () -> new BlockItem(BlockInit.GLOWING_NIGHT_SPROUTS.get(), new Item.Properties()));
@@ -112,6 +112,17 @@ public class ItemInit {
     public static final RegistryObject<Item> LUNAR_REED = ITEMS.register("lunar_reed", () -> new BlockItem(BlockInit.LUNAR_REED.get(), new Item.Properties()));
     public static final RegistryObject<Item> GLOWING_MUSHROOM = ITEMS.register("glowing_mushroom", () -> new BlockItem(BlockInit.GLOWING_MUSHROOM.get(), new Item.Properties()));
     public static final RegistryObject<Item> GLOWING_MUSHROOM_BLOCK = ITEMS.register("glowing_mushroom_block", () -> new BlockItem(BlockInit.GLOWING_MUSHROOM_BLOCK.get(), new Item.Properties()));
+
+    // swamp grass
+    public static final RegistryObject<Item> SWAMP_ROSE = ITEMS.register("swamp_rose", () -> new BlockItem(BlockInit.SWAMP_ROSE.get(), new Item.Properties()));
+    public static final RegistryObject<Item> FANTABUD = ITEMS.register("fantabud", () -> new BlockItem(BlockInit.FANTABUD.get(), new Item.Properties()));
+    public static final RegistryObject<Item> GREEN_FANTABUD = ITEMS.register("green_fantabud", () -> new BlockItem(BlockInit.GREEN_FANTABUD.get(), new Item.Properties()));
+    public static final RegistryObject<Item> FANTAFERN = ITEMS.register("fantafern", () -> new BlockItem(BlockInit.FANTAFERN.get(), new Item.Properties()));
+    public static final RegistryObject<Item> GREEN_FANTAFERN = ITEMS.register("green_fantafern", () -> new BlockItem(BlockInit.GREEN_FANTAFERN.get(), new Item.Properties()));
+    public static final RegistryObject<Item> FANTAGRASS = ITEMS.register("fantagrass", () -> new BlockItem(BlockInit.FANTAGRASS.get(), new Item.Properties()));
+    public static final RegistryObject<Item> GREEN_FANTAGRASS = ITEMS.register("green_fantagrass", () -> new BlockItem(BlockInit.GREEN_FANTAGRASS.get(), new Item.Properties()));
+
+    public static final RegistryObject<Item> FANTASY_GRASS_BLOCK = ITEMS.register("fantasy_grass_block", () -> new BlockItem(BlockInit.FANTASY_GRASS_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> NIGHTSHADE_GRASS_BLOCK = ITEMS.register("nightshade_grass_block", () -> new BlockItem(BlockInit.NIGHTSHADE_GRASS_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> NIGHTSHADE_DIRT = ITEMS.register("nightshade_dirt", () -> new BlockItem(BlockInit.NIGHTSHADE_DIRT.get(), new Item.Properties()));
 
@@ -148,11 +159,29 @@ public class ItemInit {
     public static final RegistryObject<Item> NIGHTSHADE_MUD_BRICK_STAIRS = ITEMS.register("nightshade_mud_brick_stairs", () -> new BlockItem(BlockInit.NIGHTSHADE_MUD_BRICK_STAIRS.get(), new Item.Properties()));
     public static final RegistryObject<Item> NIGHTSHADE_MUD_BRICK_WALL = ITEMS.register("nightshade_mud_brick_wall", () -> new BlockItem(BlockInit.NIGHTSHADE_MUD_BRICK_WALL.get(), new Item.Properties()));
 
+    //misc
     public static final RegistryObject<Item> ENERGY_BLOCK = ITEMS.register("energy_block", () -> new BlockItem(BlockInit.ENERGY_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> STARLIGHT_GOLEM_SPAWNER = ITEMS.register("starlight_golem_spawner", () -> new BlockItem(BlockInit.STARLIGHT_GOLEM_SPAWNER.get(), new Item.Properties()));
     public static final RegistryObject<Item> LUNAR_MONSTROSITY_SPAWNER = ITEMS.register("lunar_monstrosity_spawner", () -> new BlockItem(BlockInit.LUNAR_MONSTROSITY_SPAWNER.get(), new Item.Properties()));
     public static final RegistryObject<Item> LOOT_BAG = ITEMS.register("loot_bag", () -> new LootBagItem(new Item.Properties().fireResistant().rarity(STARLIGHT)));
+    public static final RegistryObject<Item> BOOK = ITEMS.register("book", () -> new SLBookItem(new Item.Properties().rarity(STARLIGHT)));
 
+    //aethersent
+    public static final RegistryObject<Item> AETHERSENT_BLOCK = ITEMS.register("aethersent_block", () -> new BlockItem(BlockInit.AETHERSENT_BLOCK.get(), new Item.Properties()));
+    public static final RegistryObject<Item> AETHERSENT_INGOT = ITEMS.register("aethersent_ingot", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> RAGE_OF_STARS = ITEMS.register("rage_of_stars", () -> new RageOfStarsItem(new Item.Properties().stacksTo(1).defaultDurability(1000)));
+    public static final RegistryObject<Item> STARFALL_LONGBOW = ITEMS.register("starfall_longbow", () -> new StarfallLongbowItem(new Item.Properties().stacksTo(1).defaultDurability(2000)));
+    public static final RegistryObject<Item> AETHERSENT_HOOD = ITEMS.register("aethersent_hood",
+            () -> new AethersentArmorItem(SLArmorMaterials.AETHERSENT, ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final RegistryObject<Item> AETHERSENT_CAPE = ITEMS.register("aethersent_cape",
+            () -> new AethersentArmorItem(SLArmorMaterials.AETHERSENT, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+    public static final RegistryObject<Item> AETHERSENT_BOTTOMS = ITEMS.register("aethersent_bottoms",
+            () -> new AethersentArmorItem(SLArmorMaterials.AETHERSENT, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+    public static final RegistryObject<Item> AETHERSENT_BOOTS = ITEMS.register("aethersent_boots",
+            () -> new AethersentArmorItem(SLArmorMaterials.AETHERSENT, ArmorItem.Type.BOOTS, new Item.Properties()));
+
+
+    //thermal springstone
     public static final RegistryObject<Item> SPRINGSTONE = ITEMS.register("springstone", () -> new BlockItem(BlockInit.SPRINGSTONE.get(), new Item.Properties()));
     public static final RegistryObject<Item> THERMAL_SPRINGSTONE = ITEMS.register("thermal_springstone", () -> new BlockItem(BlockInit.THERMAL_SPRINGSTONE.get(), new Item.Properties()));
     public static final RegistryObject<Item> THERMAL_SPRINGSTONE_INGOT = ITEMS.register("thermal_springstone_ingot", () -> new Item(new Item.Properties()));
@@ -174,6 +203,8 @@ public class ItemInit {
             () -> new ThermalSpringStoneArmorItem(SLArmorMaterials.THERMAL_SPRINGSTONE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final RegistryObject<Item> THERMAL_SPRINGSTONE_BOOTS = ITEMS.register("thermal_springstone_boots",
             () -> new ThermalSpringStoneArmorItem(SLArmorMaterials.THERMAL_SPRINGSTONE, ArmorItem.Type.BOOTS, new Item.Properties()));
+
+    //swamp silver
     public static final RegistryObject<Item> SWAMP_SILVER_ORE = ITEMS.register("swamp_silver_ore", () -> new BlockItem(BlockInit.SWAMP_SILVER_ORE.get(), new Item.Properties()));
     public static final RegistryObject<Item> SWAMP_SILVER_BLOCK = ITEMS.register("swamp_silver_block", () -> new BlockItem(BlockInit.SWAMP_SILVER_BLOCK.get(), new Item.Properties()));
     public static final RegistryObject<Item> SWAMP_SILVER_INGOT = ITEMS.register("swamp_silver_ingot", () -> new Item(new Item.Properties()));
@@ -194,9 +225,13 @@ public class ItemInit {
             () -> new SwampSilverArmorItem(SLArmorMaterials.SWAMP_SILVER, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final RegistryObject<Item> SWAMP_SILVER_BOOTS = ITEMS.register("swamp_silver_boots",
             () -> new SwampSilverArmorItem(SLArmorMaterials.SWAMP_SILVER, ArmorItem.Type.BOOTS, new Item.Properties()));
+
+    //boss materials
     public static final RegistryObject<Item> GOLEM_STEEL_INGOT = ITEMS.register("golem_steel_ingot", () -> new Item(new Item.Properties().rarity(STARLIGHT)));
     public static final RegistryObject<Item> OXIDIZED_GOLEM_STEEL_INGOT = ITEMS.register("oxidized_golem_steel_ingot", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> TENACIOUS_PETAL = ITEMS.register("tenacious_petal", () -> new Item(new Item.Properties().rarity(STARLIGHT)));
+    public static final RegistryObject<Item> CRYSTAL_CROSSBOW = ITEMS.register("crystal_crossbow", () -> new CrystalCrossbowItem(new Item.Properties().stacksTo(1).durability(2000).rarity(STARLIGHT)));
+    public static final RegistryObject<Item> MOONRING_BOW = ITEMS.register("moonring_bow", () -> new MoonRingBowItem(new Item.Properties().stacksTo(1).durability(2000).rarity(STARLIGHT)));
     public static final RegistryObject<Item> MOONRING_GREATSWORD = ITEMS.register("moonring_greatsword", () -> new GreatswordItem(SLItemTiers.PETAL, 6, -2.8F, new Item.Properties().rarity(STARLIGHT)));
     public static final RegistryObject<Item> PETAL_SCYTHE = ITEMS.register("petal_scythe", () -> new ScytheItem(SLItemTiers.PETAL, 3, -1.0F, new Item.Properties().rarity(STARLIGHT)));
     public static final RegistryObject<Item> SEEKING_EYE = ITEMS.register("seeking_eye", () -> new SeekingEyeItem(new Item.Properties()));

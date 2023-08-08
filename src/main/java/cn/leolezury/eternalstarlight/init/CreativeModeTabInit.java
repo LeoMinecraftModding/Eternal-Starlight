@@ -67,6 +67,7 @@ public class CreativeModeTabInit {
                 output.accept(ItemInit.STARLIGHT_MANGROVE_SLAB.get().getDefaultInstance());
                 output.accept(ItemInit.STARLIGHT_MANGROVE_STAIRS.get().getDefaultInstance());
                 output.accept(ItemInit.GLOWING_MUSHROOM_BLOCK.get().getDefaultInstance());
+                output.accept(ItemInit.FANTASY_GRASS_BLOCK.get().getDefaultInstance());
                 output.accept(ItemInit.NIGHTSHADE_GRASS_BLOCK.get().getDefaultInstance());
                 output.accept(ItemInit.NIGHTSHADE_DIRT.get().getDefaultInstance());
                 output.accept(ItemInit.GRIMSTONE.get().getDefaultInstance());
@@ -97,6 +98,7 @@ public class CreativeModeTabInit {
                 output.accept(ItemInit.NIGHTSHADE_MUD_BRICK_STAIRS.get().getDefaultInstance());
                 output.accept(ItemInit.NIGHTSHADE_MUD_BRICK_WALL.get().getDefaultInstance());
                 output.accept(ItemInit.SPRINGSTONE.get().getDefaultInstance());
+                output.accept(ItemInit.AETHERSENT_BLOCK.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE.get().getDefaultInstance());
                 output.accept(ItemInit.SWAMP_SILVER_BLOCK.get().getDefaultInstance());
                 output.accept(ItemInit.ENERGY_BLOCK.get().getDefaultInstance());
@@ -125,6 +127,13 @@ public class CreativeModeTabInit {
                 output.accept(ItemInit.GLOWING_PARASOL_GRASS.get().getDefaultInstance());
                 output.accept(ItemInit.GLOWING_NIGHT_SPROUTS.get().getDefaultInstance());
                 output.accept(ItemInit.SMALL_GLOWING_NIGHT_SPROUTS.get().getDefaultInstance());
+                output.accept(ItemInit.SWAMP_ROSE.get().getDefaultInstance());
+                output.accept(ItemInit.FANTABUD.get().getDefaultInstance());
+                output.accept(ItemInit.GREEN_FANTABUD.get().getDefaultInstance());
+                output.accept(ItemInit.FANTAFERN.get().getDefaultInstance());
+                output.accept(ItemInit.GREEN_FANTAFERN.get().getDefaultInstance());
+                output.accept(ItemInit.FANTAGRASS.get().getDefaultInstance());
+                output.accept(ItemInit.GREEN_FANTAGRASS.get().getDefaultInstance());
                 output.accept(ItemInit.LUNAR_SAPLING.get().getDefaultInstance());
                 output.accept(ItemInit.NORTHLAND_SAPLING.get().getDefaultInstance());
                 output.accept(ItemInit.STARLIGHT_MANGROVE_SAPLING.get().getDefaultInstance());
@@ -152,6 +161,12 @@ public class CreativeModeTabInit {
             .title(Component.translatable("itemGroup." + EternalStarlight.MOD_ID + ".combat"))
             .icon(() -> new ItemStack(ItemInit.MOONRING_GREATSWORD.get()))
             .displayItems((parameters, output) -> {
+                output.accept(ItemInit.RAGE_OF_STARS.get().getDefaultInstance());
+                output.accept(ItemInit.STARFALL_LONGBOW.get().getDefaultInstance());
+                output.accept(ItemInit.AETHERSENT_HOOD.get().getDefaultInstance());
+                output.accept(ItemInit.AETHERSENT_CAPE.get().getDefaultInstance());
+                output.accept(ItemInit.AETHERSENT_BOTTOMS.get().getDefaultInstance());
+                output.accept(ItemInit.AETHERSENT_BOOTS.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE_HELMET.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE_CHESTPLATE.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE_LEGGINGS.get().getDefaultInstance());
@@ -176,6 +191,7 @@ public class CreativeModeTabInit {
             .title(Component.translatable("itemGroup." + EternalStarlight.MOD_ID + ".tools"))
             .icon(() -> new ItemStack(ItemInit.SWAMP_SILVER_AXE.get()))
             .displayItems((parameters, output) -> {
+                output.accept(ItemInit.BOOK.get().getDefaultInstance());
                 output.accept(ItemInit.SEEKING_EYE.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE_SCYTHE.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE_HAMMER.get().getDefaultInstance());
@@ -200,6 +216,7 @@ public class CreativeModeTabInit {
             .displayItems((parameters, output) -> {
                 output.accept(ItemInit.RED_STARLIGHT_CRYSTAL_SHARD.get().getDefaultInstance());
                 output.accept(ItemInit.BLUE_STARLIGHT_CRYSTAL_SHARD.get().getDefaultInstance());
+                output.accept(ItemInit.AETHERSENT_INGOT.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE.get().getDefaultInstance());
                 output.accept(ItemInit.THERMAL_SPRINGSTONE_INGOT.get().getDefaultInstance());
                 output.accept(ItemInit.SWAMP_SILVER_ORE.get().getDefaultInstance());

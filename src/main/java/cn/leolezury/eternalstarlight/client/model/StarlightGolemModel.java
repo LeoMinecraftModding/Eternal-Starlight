@@ -2,10 +2,8 @@ package cn.leolezury.eternalstarlight.client.model;
 
 import cn.leolezury.eternalstarlight.EternalStarlight;
 import cn.leolezury.eternalstarlight.client.model.animation.StarlightGolemAnimation;
+import cn.leolezury.eternalstarlight.client.model.animation.model.AnimatedEntityModel;
 import cn.leolezury.eternalstarlight.entity.boss.StarlightGolem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -15,22 +13,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class StarlightGolemModel<T extends StarlightGolem> extends HierarchicalModel<T> {
+public class StarlightGolemModel<T extends StarlightGolem> extends AnimatedEntityModel<T> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(EternalStarlight.MOD_ID, "starlight_golem"), "main");
     private final ModelPart root;
     private final ModelPart head;
-    private final ModelPart body;
-    private final ModelPart base;
-    private final ModelPart left_arm;
-    private final ModelPart right_arm;
 
     public StarlightGolemModel(ModelPart root) {
         this.root = root;
-        body = root.getChild("body");
-        base = root.getChild("base");
         head = root.getChild("body").getChild("head");
-        left_arm = root.getChild("body").getChild("left_arm");
-        right_arm = root.getChild("body").getChild("right_arm");
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -85,12 +75,6 @@ public class StarlightGolemModel<T extends StarlightGolem> extends HierarchicalM
         if (entity.deathTime > 0) {
             animate(entity.deathAnimationState, StarlightGolemAnimation.DEATH, ageInTicks);
         }
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-        base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

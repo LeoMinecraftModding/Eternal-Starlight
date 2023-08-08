@@ -46,7 +46,9 @@ public class PlacedFeatureGenerator {
     public static final ResourceKey<PlacedFeature> SL_PERMAFROST_FOREST_KEY = createKey("sl_permafrost_forest");
     public static final ResourceKey<PlacedFeature> STARLIGHT_FLOWER_KEY = createKey("starlight_flower");
     public static final ResourceKey<PlacedFeature> SL_GRASS_KEY = createKey("sl_grass");
+    public static final ResourceKey<PlacedFeature> SWAMP_GRASS_KEY = createKey("swamp_grass");
     public static final ResourceKey<PlacedFeature> SWAMP_LAKE_KEY = createKey("swamp_lake");
+    public static final ResourceKey<PlacedFeature> SWAMP_WATER_KEY = createKey("swamp_water");
     public static final ResourceKey<PlacedFeature> CAVE_SPRING_KEY = createKey("cave_spring");
     public static final ResourceKey<PlacedFeature> SWAMP_SILVER_ORE_KEY = createKey("swamp_silver_ore");
 
@@ -55,7 +57,6 @@ public class PlacedFeatureGenerator {
 
     public static void bootstrap(BootstapContext<PlacedFeature> context) {
         HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
-        //register(context, , configuredFeatures.getOrThrow(ConfiguredFeatureInit.), );
         BlockPredicate snowPredicate = BlockPredicate.matchesBlocks(Direction.DOWN.getNormal(), Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW);
         List<PlacementModifier> onSnow = List.of(EnvironmentScanPlacement.scanningFor(Direction.UP, BlockPredicate.not(BlockPredicate.matchesBlocks(Blocks.POWDER_SNOW)), 8), BlockPredicateFilter.forPredicate(snowPredicate));
 
@@ -80,13 +81,15 @@ public class PlacedFeatureGenerator {
         register(context, SL_PERMAFROST_FOREST_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SL_PERMAFROST_FOREST_KEY), VegetationPlacements.treePlacement(PlacementUtils.countExtra(6, 0.1F, 2)));
         register(context, SL_SWAMP_FOREST_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SL_SWAMP_FOREST_KEY), VegetationPlacements.treePlacement(PlacementUtils.countExtra(4, 0.1F, 1)));
         register(context, STARLIGHT_FLOWER_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.STARLIGHT_FLOWER_KEY), RarityFilter.onAverageOnceEvery(8), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP);
-        register(context, SL_GRASS_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SL_GRASS_KEY), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP);
-        register(context, SWAMP_LAKE_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SWAMP_LAKE_KEY), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP_WORLD_SURFACE);
+        register(context, SL_GRASS_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SL_GRASS_KEY), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP_WORLD_SURFACE);
+        register(context, SWAMP_GRASS_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SWAMP_GRASS_KEY), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP_WORLD_SURFACE);
+        register(context, SWAMP_LAKE_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SWAMP_LAKE_KEY), RarityFilter.onAverageOnceEvery(4), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP_WORLD_SURFACE);
+        register(context, SWAMP_WATER_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SWAMP_WATER_KEY), PlacementUtils.HEIGHTMAP_WORLD_SURFACE);
         register(context, CAVE_SPRING_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.CAVE_SPRING_KEY), RarityFilter.onAverageOnceEvery(8), InSquarePlacement.spread(), HeightRangePlacement.of(UniformHeight.of(VerticalAnchor.absolute(0), VerticalAnchor.top())), EnvironmentScanPlacement.scanningFor(Direction.DOWN, BlockPredicate.allOf(BlockPredicate.not(BlockPredicate.ONLY_IN_AIR_PREDICATE), BlockPredicate.insideWorld(new BlockPos(0, -5, 0))), 32), SurfaceRelativeThresholdFilter.of(Heightmap.Types.OCEAN_FLOOR_WG, Integer.MIN_VALUE, -5));
         register(context, SWAMP_SILVER_ORE_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.SWAMP_SILVER_ORE_KEY), commonOrePlacement(30, HeightRangePlacement.uniform(VerticalAnchor.absolute(0), VerticalAnchor.top())));
 
-        //structure features
-        register(context, CURSED_GARDEN_EXTRA_HEIGHT_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.CURSED_GARDEN_EXTRA_HEIGHT_KEY)); //no placement modifier
+        // structure features
+        register(context, CURSED_GARDEN_EXTRA_HEIGHT_KEY, configuredFeatures.getOrThrow(ConfiguredFeatureGenerator.CURSED_GARDEN_EXTRA_HEIGHT_KEY)); // no placement modifier
     }
 
 
@@ -103,10 +106,10 @@ public class PlacedFeatureGenerator {
                                  PlacementModifier... modifiers) {
         register(context, key, configuration, List.of(modifiers));
     }
-    public static List<PlacementModifier> orePlacement(PlacementModifier p_195347_, PlacementModifier p_195348_) {
-        return List.of(p_195347_, InSquarePlacement.spread(), p_195348_, BiomeFilter.biome());
+    public static List<PlacementModifier> orePlacement(PlacementModifier modifier, PlacementModifier modifier1) {
+        return List.of(modifier, InSquarePlacement.spread(), modifier1, BiomeFilter.biome());
     }
-    public static List<PlacementModifier> commonOrePlacement(int p_195344_, PlacementModifier p_195345_) {
-        return orePlacement(CountPlacement.of(p_195344_), p_195345_);
+    public static List<PlacementModifier> commonOrePlacement(int count, PlacementModifier modifier) {
+        return orePlacement(CountPlacement.of(count), modifier);
     }
 }

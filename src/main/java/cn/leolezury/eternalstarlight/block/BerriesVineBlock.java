@@ -27,49 +27,49 @@ public class BerriesVineBlock extends GrowingPlantHeadBlock implements Bonemeala
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, Integer.valueOf(0)).setValue(BERRIES, Boolean.valueOf(false)));
     }
 
-    protected int getBlocksToGrowWhenBonemealed(RandomSource p_220928_) {
+    protected int getBlocksToGrowWhenBonemealed(RandomSource randomSource) {
         return 1;
     }
 
-    protected boolean canGrowInto(BlockState p_152998_) {
-        return p_152998_.isAir();
+    protected boolean canGrowInto(BlockState state) {
+        return state.isAir();
     }
 
     protected Block getBodyBlock() {
         return BlockInit.BERRIES_VINES_PLANT.get();
     }
 
-    protected BlockState updateBodyAfterConvertedFromHead(BlockState p_152987_, BlockState p_152988_) {
-        return p_152988_.setValue(BERRIES, p_152987_.getValue(BERRIES));
+    protected BlockState updateBodyAfterConvertedFromHead(BlockState state, BlockState blockState) {
+        return blockState.setValue(BERRIES, state.getValue(BERRIES));
     }
 
-    protected BlockState getGrowIntoState(BlockState p_220935_, RandomSource p_220936_) {
-        return super.getGrowIntoState(p_220935_, p_220936_).setValue(BERRIES, Boolean.valueOf(p_220936_.nextFloat() < 0.11F));
+    protected BlockState getGrowIntoState(BlockState state, RandomSource randomSource) {
+        return super.getGrowIntoState(state, randomSource).setValue(BERRIES, Boolean.valueOf(randomSource.nextFloat() < 0.11F));
     }
 
-    public ItemStack getCloneItemStack(BlockGetter p_152966_, BlockPos p_152967_, BlockState p_152968_) {
+    public ItemStack getCloneItemStack(BlockGetter blockGetter, BlockPos pos, BlockState state) {
         return new ItemStack(ItemInit.LUNAR_BERRIES.get());
     }
 
-    public InteractionResult use(BlockState p_152980_, Level p_152981_, BlockPos p_152982_, Player p_152983_, InteractionHand p_152984_, BlockHitResult p_152985_) {
-        return BerriesVines.use(p_152980_, p_152981_, p_152982_);
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        return BerriesVines.use(state, level, pos);
     }
 
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_152993_) {
-        super.createBlockStateDefinition(p_152993_);
-        p_152993_.add(BERRIES);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(BERRIES);
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader p_255931_, BlockPos p_256046_, BlockState p_256550_, boolean p_256181_) {
-        return !p_256550_.getValue(BERRIES);
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos pos, BlockState state, boolean b) {
+        return !state.getValue(BERRIES);
     }
 
-    public boolean isBonemealSuccess(Level p_220930_, RandomSource p_220931_, BlockPos p_220932_, BlockState p_220933_) {
+    public boolean isBonemealSuccess(Level level, RandomSource randomSource, BlockPos pos, BlockState state) {
         return true;
     }
 
-    public void performBonemeal(ServerLevel p_220923_, RandomSource p_220924_, BlockPos p_220925_, BlockState p_220926_) {
-        p_220923_.setBlock(p_220925_, p_220926_.setValue(BERRIES, Boolean.valueOf(true)), 2);
+    public void performBonemeal(ServerLevel serverLevel, RandomSource randomSource, BlockPos pos, BlockState state) {
+        serverLevel.setBlock(pos, state.setValue(BERRIES, Boolean.valueOf(true)), 2);
     }
 }

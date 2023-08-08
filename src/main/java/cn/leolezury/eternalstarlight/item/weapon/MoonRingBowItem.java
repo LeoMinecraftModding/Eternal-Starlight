@@ -12,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class MoonRingBowItem extends BowItem {
-    public MoonRingBowItem(Properties p_40660_) {
-        super(p_40660_);
+    public MoonRingBowItem(Properties properties) {
+        super(properties);
     }
 
     @Override

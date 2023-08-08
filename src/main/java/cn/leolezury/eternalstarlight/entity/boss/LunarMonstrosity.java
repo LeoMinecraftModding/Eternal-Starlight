@@ -2,16 +2,18 @@ package cn.leolezury.eternalstarlight.entity.boss;
 
 import cn.leolezury.eternalstarlight.datagen.generator.DamageTypeGenerator;
 import cn.leolezury.eternalstarlight.entity.attack.Vine;
+import cn.leolezury.eternalstarlight.entity.boss.bossevent.SLServerBossEvent;
 import cn.leolezury.eternalstarlight.entity.projectile.Spore;
+import cn.leolezury.eternalstarlight.event.client.ClientEvents;
 import cn.leolezury.eternalstarlight.init.EntityInit;
 import cn.leolezury.eternalstarlight.init.ParticleInit;
 import cn.leolezury.eternalstarlight.init.SoundEventInit;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -45,6 +47,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.EnumSet;
 import java.util.Random;
@@ -53,7 +57,7 @@ public class LunarMonstrosity extends AbstractSLBoss {
     public LunarMonstrosity(EntityType<? extends AbstractSLBoss> entityType, Level level) {
         super(entityType, level);
     }
-    private final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
+    private final SLServerBossEvent bossEvent = new SLServerBossEvent(this, getUUID(), BossEvent.BossBarColor.PURPLE, true);
 
     public AnimationState toxicBreathAnimationState = new AnimationState();
     public AnimationState sporeAnimationState = new AnimationState();
@@ -70,6 +74,9 @@ public class LunarMonstrosity extends AbstractSLBoss {
     int biteCoolDown = 0;
     int sneakCoolDown = 0;
     private Vec3 targetPos = Vec3.ZERO;
+
+    @OnlyIn(Dist.CLIENT)
+    public Vec3 headPos = Vec3.ZERO;
 
     @Override
     public void setAttackState(int attackState) {
@@ -93,6 +100,12 @@ public class LunarMonstrosity extends AbstractSLBoss {
         entityData.set(PARTICLE_ANGLE_X, (float) x);
         entityData.set(PARTICLE_ANGLE_Y, (float) y);
         entityData.set(PARTICLE_ANGLE_Z, (float) z);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        bossEvent.setId(getUUID());
     }
 
     public void startSeenByPlayer(ServerPlayer serverPlayer) {
@@ -298,12 +311,24 @@ public class LunarMonstrosity extends AbstractSLBoss {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public void handleEntityEvent(byte id) {
+        if (id == ClientEvents.BOSS_MUSIC_ID) {
+            ClientEvents.handleEntityEvent(this, id);
+        } else {
+            super.handleEntityEvent(id);
+        }
+    }
+
     @Override
     public void aiStep() {
         super.aiStep();
+        bossEvent.update();
         refreshDimensions();
         if (!level().isClientSide) {
-            bossEvent.setProgress(getHealth() / getMaxHealth());
+            if (!isSilent()) {
+                this.level().broadcastEntityEvent(this, (byte)ClientEvents.BOSS_MUSIC_ID);
+            }
             setParticleAngle((targetPos.x - getX()) / 10D, (targetPos.y - getY() - 2) / 10D, (targetPos.z - getZ()) / 10D);
             LivingEntity target = getTarget();
             if (toxicBreathCoolDown > 0) {
@@ -447,13 +472,13 @@ public class LunarMonstrosity extends AbstractSLBoss {
             if (deathTime <= 0) {
                 switch (getAttackState()) {
                     case -2 -> {
-                        level().addParticle(ParticleTypes.CRIT, getX() + getRandom().nextDouble() - 0.5, getY() + 2.5, getZ() + getRandom().nextDouble() - 0.5, getRandom().nextDouble() / 10, 0.8, getRandom().nextDouble() / 10);
+                        level().addParticle(ParticleTypes.CRIT, headPos.x + getRandom().nextDouble() - 0.5, headPos.y, headPos.z + getRandom().nextDouble() - 0.5, getRandom().nextDouble() / 10, 0.8, getRandom().nextDouble() / 10);
                     }
                     case 1 -> {
                         Vec3 angle = new Vec3(getParticleAngleX(), getParticleAngleY(), getParticleAngleZ());
-                        double px = getX() + angle.x() * 0.5D;
-                        double py = getY() + 2.5D;
-                        double pz = getZ() + angle.z() * 0.5D;
+                        double px = headPos.x + angle.x() * 0.5D;
+                        double py = headPos.y;
+                        double pz = headPos.z + angle.z() * 0.5D;
 
                         for (int i = 0; i < 10; i++) {
                             double dx = angle.x();

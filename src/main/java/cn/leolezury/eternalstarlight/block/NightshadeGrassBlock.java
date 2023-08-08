@@ -16,21 +16,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public class NightshadeGrassBlock extends SpreadingSnowyNightshadeDirtBlock implements BonemealableBlock {
-    public NightshadeGrassBlock(BlockBehaviour.Properties p_53685_) {
-        super(p_53685_);
+    public NightshadeGrassBlock(BlockBehaviour.Properties properties) {
+        super(properties);
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader p_256559_, BlockPos p_50898_, BlockState p_50899_, boolean p_50900_) {
-        return p_256559_.getBlockState(p_50898_.above()).isAir();
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos pos, BlockState state, boolean b) {
+        return levelReader.getBlockState(pos.above()).isAir();
     }
 
-    public boolean isBonemealSuccess(Level p_221275_, RandomSource p_221276_, BlockPos p_221277_, BlockState p_221278_) {
+    public boolean isBonemealSuccess(Level level, RandomSource randomSource, BlockPos pos, BlockState state) {
         return true;
     }
 
-    public void performBonemeal(ServerLevel p_221270_, RandomSource p_221271_, BlockPos p_221272_, BlockState p_221273_) {
-        BlockPos blockpos = p_221272_.above();
+    public void performBonemeal(ServerLevel serverLevel, RandomSource randomSource, BlockPos pos, BlockState state) {
+        BlockPos blockpos = pos.above();
         BlockState blockstate = Blocks.GRASS.defaultBlockState();
 
         label46:
@@ -38,24 +38,24 @@ public class NightshadeGrassBlock extends SpreadingSnowyNightshadeDirtBlock impl
             BlockPos blockpos1 = blockpos;
 
             for(int j = 0; j < i / 16; ++j) {
-                blockpos1 = blockpos1.offset(p_221271_.nextInt(3) - 1, (p_221271_.nextInt(3) - 1) * p_221271_.nextInt(3) / 2, p_221271_.nextInt(3) - 1);
-                if (!p_221270_.getBlockState(blockpos1.below()).is(this) || p_221270_.getBlockState(blockpos1).isCollisionShapeFullBlock(p_221270_, blockpos1)) {
+                blockpos1 = blockpos1.offset(randomSource.nextInt(3) - 1, (randomSource.nextInt(3) - 1) * randomSource.nextInt(3) / 2, randomSource.nextInt(3) - 1);
+                if (!serverLevel.getBlockState(blockpos1.below()).is(this) || serverLevel.getBlockState(blockpos1).isCollisionShapeFullBlock(serverLevel, blockpos1)) {
                     continue label46;
                 }
             }
 
-            BlockState blockstate1 = p_221270_.getBlockState(blockpos1);
-            if (blockstate1.is(blockstate.getBlock()) && p_221271_.nextInt(10) == 0) {
-                ((BonemealableBlock)blockstate.getBlock()).performBonemeal(p_221270_, p_221271_, blockpos1, blockstate1);
+            BlockState blockstate1 = serverLevel.getBlockState(blockpos1);
+            if (blockstate1.is(blockstate.getBlock()) && randomSource.nextInt(10) == 0) {
+                ((BonemealableBlock)blockstate.getBlock()).performBonemeal(serverLevel, randomSource, blockpos1, blockstate1);
             }
 
             if (blockstate1.isAir()) {
                 Holder<PlacedFeature> holder;
 
-                HolderGetter<PlacedFeature> placedFeatureHolderGetter =  p_221270_.holderLookup(Registries.PLACED_FEATURE);
+                HolderGetter<PlacedFeature> placedFeatureHolderGetter =  serverLevel.holderLookup(Registries.PLACED_FEATURE);
                 holder = placedFeatureHolderGetter.getOrThrow(PlacedFeatureGenerator.SL_GRASS_KEY);
 
-                holder.value().place(p_221270_, p_221270_.getChunkSource().getGenerator(), p_221271_, blockpos1);
+                holder.value().place(serverLevel, serverLevel.getChunkSource().getGenerator(), randomSource, blockpos1);
             }
         }
 

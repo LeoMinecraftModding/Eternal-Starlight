@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "eternal_starlight:aethersent_block",
     "eternal_starlight:springstone",
     "eternal_starlight:thermal_springstone",
     "eternal_starlight:swamp_silver_block",

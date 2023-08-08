@@ -3,7 +3,7 @@
 
   "start_pool": "eternal_starlight:cursed_garden/start_pool",
 
-  "size": 10,
+  "size": 7,
   "max_distance_from_center": 121,
   "biomes": "#eternal_starlight:has_structure/cursed_garden",
   "step": "surface_structures",
